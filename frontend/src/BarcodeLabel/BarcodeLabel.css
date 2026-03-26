@@ -1,0 +1,222 @@
+/* Barcode Fetch Loading Spinner Overlay */
+.barcode-fetch-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.barcode-fetch-spinner {
+  width: 60px;
+  height: 60px;
+  border: 7px solid #e0e7ef;
+  border-top: 7px solid #2563eb;
+  border-radius: 50%;
+  animation: barcode-spin 1s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes barcode-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* ================= BARCODE LABEL MODAL ================= */
+.barcode-label-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.barcode-label-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.barcode-label-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+  font-size: 20px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* ================= LABEL PREVIEW ================= */
+.label-preview {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.barcode-label {
+  width: 50mm;
+  height: 25mm;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 4px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.barcode-strip {
+  border-bottom: 2px solid #000;
+  padding: 2px 0;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: center;
+  height: 8mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-code-text {
+  font-size: 7px;
+  font-weight: bold;
+  text-align: center;
+  margin: 1px 0;
+  letter-spacing: 0.5px;
+}
+
+.product-name-text {
+  font-size: 6px;
+  font-weight: 600;
+  text-align: center;
+  margin: 1px 0;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.price-text {
+  font-size: 8px;
+  font-weight: bold;
+  text-align: center;
+  margin: 1px 0;
+}
+
+/* ================= LABEL INFO ================= */
+.label-info {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 4px solid #2563eb;
+}
+
+.label-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.label-info strong {
+  color: #000;
+  min-width: 100px;
+  display: inline-block;
+}
+
+/* ================= LABEL ACTIONS ================= */
+.label-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.print-btn,
+.copy-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.print-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.print-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
+}
+
+.copy-btn {
+  background: #e5e7eb;
+  color: #333;
+}
+
+.copy-btn:hover {
+  background: #d1d5db;
+  transform: translateY(-2px);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 480px) {
+  .barcode-label-content {
+    padding: 20px;
+  }
+
+  .barcode-label {
+    width: 40mm;
+    height: 20mm;
+  }
+
+  .label-actions {
+    flex-direction: column;
+  }
+}

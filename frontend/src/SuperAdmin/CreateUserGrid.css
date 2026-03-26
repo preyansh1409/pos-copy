@@ -1,0 +1,49 @@
+.client-four-col-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem 1.2rem;
+  align-items: end;
+}
+.compact-grid {
+  padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+  max-width: 700px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem 1.2rem;
+  align-items: end;
+}
+.form-group {
+  margin-bottom: 0.2rem;
+}
+.form-group label {
+  font-size: 0.98rem;
+  margin-bottom: 0.2rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  font-size: 0.97rem;
+  padding: 0.35rem 0.5rem;
+  min-width: 0;
+}
+.form-group-notes {
+  grid-column: span 3;
+}
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .form-group-notes {
+    grid-column: span 2;
+  }
+}
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-group-notes {
+    grid-column: span 1;
+  }
+}

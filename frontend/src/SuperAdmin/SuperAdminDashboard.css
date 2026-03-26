@@ -1,0 +1,171 @@
+
+.superadmin-dashboard {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+/* Sidebar Styling */
+.superadmin-sidenav {
+  width: 280px;
+  background: #0f172a; /* Sleek Dark Navy */
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  flex-shrink: 0;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+  z-index: 50;
+}
+
+.sidebar-header {
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.admin-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.superadmin-sidenav h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.superadmin-sidenav nav {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.superadmin-sidenav nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.superadmin-sidenav nav ul li {
+  margin-bottom: 0.5rem;
+}
+
+.superadmin-sidenav nav ul li a {
+  color: #94a3b8; /* Muted slate */
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.superadmin-sidenav nav ul li a svg {
+  transition: transform 0.3s ease;
+}
+
+.superadmin-sidenav nav ul li a:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+.superadmin-sidenav nav ul li a.active {
+  background: #3b82f6;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.superadmin-sidenav nav ul li a.active svg {
+  transform: scale(1.1);
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0.9rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.sidebar-footer p {
+  font-size: 0.75rem;
+  color: #475569;
+  margin: 0;
+  text-align: center;
+}
+
+/* Main Content Area */
+.superadmin-main {
+  flex: 1;
+  background: #f8fafc;
+  height: 100vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Custom Scrollbar for Main Content */
+.superadmin-main::-webkit-scrollbar {
+  width: 6px;
+}
+.superadmin-main::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.superadmin-main::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.superadmin-main::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .superadmin-sidenav {
+    position: fixed;
+    left: -280px;
+    height: 100%;
+    transition: left 0.3s ease;
+  }
+  /* Would need hamburger logic for full mobile responsive */
+}

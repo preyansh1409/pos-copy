@@ -1,0 +1,84 @@
+.purchase-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+.purchase-card {
+  width: 900px;
+  height: 480px;
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.purchase-left {
+  flex: 1;
+  background: #203a43;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.purchase-left h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.purchase-left p {
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.purchase-right {
+  flex: 1;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.purchase-right h3 {
+  margin-bottom: 20px;
+  font-size: 26px;
+}
+
+.purchase-right input {
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.purchase-right button {
+  padding: 12px;
+  background: #203a43;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.purchase-right button:hover {
+  background: #162c34;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.success {
+  color: green;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
