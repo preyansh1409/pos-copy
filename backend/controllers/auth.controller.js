@@ -44,7 +44,7 @@ export const login = async (req, res) => {
   try {
     // 1. Try Super Admin Table First
     const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE username=?", [username]);
-    
+
     if (superData.length > 0) {
       const user = superData[0];
       const isMatch = await bcrypt.compare(password, user.password);
@@ -58,27 +58,41 @@ export const login = async (req, res) => {
 
     // 2. Try Clients Table (Shop Admins)
     const [clientData] = await db.promise().query("SELECT * FROM clients WHERE username=?", [username]);
-    
+
     if (clientData.length > 0) {
       const user = clientData[0];
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         return res.json({
           message: "Login successful",
-          user: { 
-            id: user.id, 
-            username: user.username, 
-            role: user.role || 'admin', 
-            db_name: user.db_name 
+          user: {
+            id: user.id,
+            username: user.username,
+            role: user.role || 'admin',
+            db_name: user.db_name
           }
         });
       }
     }
 
-    // 3. Fallback: Check if it's a sub-user?
-    // Note: To have only 2 tables in SuperAdmin DB, sub-users (sales/purchase) 
-    // must be stored in the tenant DB. Since we don't know the tenant yet,
-    // we return invalid credentials. 
+    // 3. Try Users Table (Sub-users: Sales, Purchase, etc.)
+    const [userData] = await db.promise().query("SELECT * FROM users WHERE username=?", [username]);
+
+    if (userData.length > 0) {
+      const user = userData[0];
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        return res.json({
+          message: "Login successful",
+          user: {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            db_name: user.db_name
+          }
+        });
+      }
+    }
 
     return res.status(401).json({ message: "Invalid credentials" });
 
@@ -204,58 +218,59 @@ export const deleteUser = (req, res) => {
   });
 };
 
-/* ================= FORGOT PASSWORD ================= */
+/* ================= FORGOT PASSWORD (REQUEST MANUAL RESET) ================= */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ message: "Email is required" });
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: "Username is required" });
 
   try {
-    const [users] = await db.promise().query("SELECT * FROM users WHERE email=?", [email]);
-
-    if (users.length === 0) {
-      return res.json({ message: "Change password request sent" });
+    // 1. Try to find the user in any of the tables to get more context for the email
+    let userDetails = `Username: ${username}\n`;
+    
+    const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE username=?", [username]);
+    if (superData.length > 0) {
+        userDetails += `Role: Super Admin\n`;
+    } else {
+        const [clientData] = await db.promise().query("SELECT * FROM clients WHERE username=?", [username]);
+        if (clientData.length > 0) {
+            userDetails += `Role: Shop Admin\nBusiness: ${clientData[0].business_name}\nShop DB: ${clientData[0].db_name}\n`;
+        } else {
+            const [userData] = await db.promise().query("SELECT * FROM users WHERE username=?", [username]);
+            if (userData.length > 0) {
+                userDetails += `Role: Sub-user (${userData[0].role})\nShop DB: ${userData[0].db_name}\nCreated By: ${userData[0].created_by}\n`;
+            }
+        }
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 15 * 60000);
-
-    await db.promise().query(
-      "INSERT INTO password_resets (email, token, expires_at) VALUES (?,?,?)",
-      [email, token, expiresAt]
-    );
-
-    const resetLink = `http://localhost:5173/reset-password?token=${token}`;
-
     const mailOptions = {
-      from: `"Prestige ERP" <${transporter.options.auth.user}>`,
-      to: email,
-      subject: 'Password Reset Request',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 10px;">
-          <h2 style="color: #1e3a5f; text-align: center;">Prestige ERP Password Reset</h2>
-          <p>Hi,</p>
-          <p>Someone requested a link to change your password. You can do this through the link below:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetLink}" style="background-color: #1e3a5f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Change my password</a>
-          </div>
-          <p>If you didn't request this, please ignore this email.</p>
-          <p>Your password won't change until you access the link above and create a new one.</p>
-          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="font-size: 12px; color: #777;">This link will expire in 15 minutes.</p>
-        </div>
-      `
+      from: `"Prestige POS System" <${transporter.options.auth.user}>`,
+      to: "preyanshpatel1409@gmail.com",
+      subject: `Password Reset Request - ${username}`,
+      text: `Hello Administrator,
+
+A password reset request has been received from the POS system.
+
+USER DETAILS:
+--------------
+${userDetails}
+
+Please reach out to the user or manually reset their password in the database as per your protocol.
+
+Regards,
+Prestige Garments Management Software`
     };
 
-    // Respond immediately, send email in background
+    // Respond immediately
     res.json({
       success: true,
-      message: "Change password request sent",
+      message: "Your reset request has been sent to the administrator!",
     });
 
+    // Send email in background
     transporter.sendMail(mailOptions).then(() => {
-      console.log("✅ Reset email sent to:", email);
+      console.log("✅ Reset request email sent for user:", username);
     }).catch((mailErr) => {
-      console.error("❌ NODEMAILER ERROR:", mailErr);
+      console.error("❌ NODEMAILER RESET REQ ERROR:", mailErr);
     });
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
@@ -263,29 +278,7 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-/* ================= RESET PASSWORD ================= */
+/* NOTE: resetPassword endpoint is no longer used for manual workflow */
 export const resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
-
-  if (!token || !newPassword) return res.status(400).json({ message: "Token and new password required" });
-
-  try {
-    const [resets] = await db.promise().query("SELECT * FROM password_resets WHERE token=?", [token]);
-    if (resets.length === 0) return res.status(400).json({ message: "Invalid or expired token" });
-
-    const resetRequest = resets[0];
-    if (new Date() > new Date(resetRequest.expires_at)) {
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await db.promise().query("UPDATE users SET password=? WHERE email=?", [hashedPassword, resetRequest.email]);
-
-    await db.promise().query("DELETE FROM password_resets WHERE email=?", [resetRequest.email]);
-
-    res.json({ message: "Password has been successfully reset" });
-  } catch (err) {
-    console.error("RESET PASSWORD ERROR:", err);
-    res.status(500).json({ message: "Server error" });
-  }
+    res.status(404).json({ message: "Manual reset workflow is active. Please contact administrator." });
 };

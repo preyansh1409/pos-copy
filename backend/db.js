@@ -51,7 +51,7 @@ export const getTenantDb = (dbName) => {
  */
 export const tenantMiddleware = (req, res, next) => {
   // Central system routes hit the master database (superadmin_db)
-  if (req.url.startsWith('/api/auth/login') || req.url.startsWith('/api/superadmin')) {
+  if (req.url.startsWith('/api/auth') || req.url.startsWith('/api/superadmin')) {
     dbStorage.run(masterDb, () => {
       next();
     });

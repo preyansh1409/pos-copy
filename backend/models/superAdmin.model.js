@@ -36,11 +36,26 @@ const initSuperAdminDatabase = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `;
 
+  const usersTable = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      role VARCHAR(50) NOT NULL,
+      db_name VARCHAR(255),
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `;
+
   try {
     await db.promise().query(superAdminsTable);
     console.log("✅ super_admins table ready");
     await db.promise().query(clientsTable);
     console.log("✅ clients table ready");
+    await db.promise().query(usersTable);
+    console.log("✅ users table ready");
   } catch (err) {
     console.error("Error initializing superadmin system tables:", err);
   }

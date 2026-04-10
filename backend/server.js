@@ -55,5 +55,4 @@ app.get("/", (req, res) => {
 
 /* ================= START SERVER ================= */
 app.listen(PORT, () => {
-  console.log(`🚀 backend connected successfully on http://localhost:${PORT}`);
-});
+  console.log(`🚀 backend connected successfully on http://
