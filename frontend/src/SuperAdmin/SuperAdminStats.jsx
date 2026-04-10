@@ -145,7 +145,7 @@ const SuperAdminStats = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .superadmin-stats-container {
           padding: 30px;
           animation: fadeIn 0.4s ease-out;

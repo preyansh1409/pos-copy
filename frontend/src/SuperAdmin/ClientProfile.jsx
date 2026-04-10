@@ -289,7 +289,7 @@ const ClientProfile = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .profile-card {
           background: #fff;
           border-radius: 12px;
