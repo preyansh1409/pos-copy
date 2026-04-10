@@ -51,6 +51,21 @@ app.get("/", (req, res) => {
   res.send("✅ Backend running successfully");
 });
 
+app.get("/api/health", async (req, res) => {
+  try {
+    const [rows] = await db.promise().query("SELECT 1");
+    res.json({ status: "success", message: "Database connected!", data: rows });
+  } catch (err) {
+    console.error("❌ Health Check Failed:", err);
+    res.status(500).json({ 
+      status: "error", 
+      message: "Database connection failed", 
+      error: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+});
+
 // (Test route removed as it uses the legacy 'users' table)
 
 /* ================= START SERVER ================= */
