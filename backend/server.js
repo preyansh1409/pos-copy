@@ -54,5 +54,11 @@ app.get("/", (req, res) => {
 // (Test route removed as it uses the legacy 'users' table)
 
 /* ================= START SERVER ================= */
-app.listen(PORT, () => {
-  console.log(`🚀 backend connected successfully on http://
+// Only listen when running locally (not in Vercel serverless)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 backend connected successfully on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
