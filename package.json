@@ -2,6 +2,7 @@
   "name": "pos-root",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
