@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -70,7 +71,7 @@ export default function Sidebar() {
     const handleSupportRequest = async (type) => {
         try {
             const username = localStorage.getItem("username") || "Admin@123";
-            const res = await fetch("http://localhost:5002/api/support/send-support-email", {
+            const res = await fetch(`${API_BASE_URL}/support/send-support-email`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ type, daysLeft, username })

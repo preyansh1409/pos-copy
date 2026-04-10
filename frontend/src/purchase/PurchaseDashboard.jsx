@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./PurchaseDashboard.css";
@@ -92,13 +93,13 @@ export default function PurchaseDashboard() {
     const loadData = async () => {
       try {
         // Categories - only from backend (tenant's real data)
-        const catRes = await fetch("http://localhost:5002/api/masterdata/categories");
+        const catRes = await fetch(`${API_BASE_URL}/masterdata/categories`);
         const catData = await catRes.json();
         const backendCats = Array.isArray(catData.categories) ? catData.categories : [];
         setAllCategories(backendCats);
 
         // Products - only from backend
-        const prodRes = await fetch("http://localhost:5002/api/masterdata/all-products");
+        const prodRes = await fetch(`${API_BASE_URL}/masterdata/all-products`);
         const prodData = await prodRes.json();
         if (prodData && Array.isArray(prodData.data)) setAllProducts(prodData.data);
 
@@ -124,7 +125,7 @@ export default function PurchaseDashboard() {
     loadData();
 
     // 2. Fetch GST Config
-    fetch("http://localhost:5002/api/masterdata/all-gst-config")
+    fetch(`${API_BASE_URL}/masterdata/all-gst-config`)
       .then(res => res.json())
       .then(data => { if (data.config) setGstConfig(data.config); })
       .catch(() => { });
@@ -132,7 +133,7 @@ export default function PurchaseDashboard() {
     // 3. Suppliers
     const fetchSuppliers = async () => {
       try {
-        const res = await fetch("http://localhost:5002/api/purchase/unique-suppliers");
+        const res = await fetch(`${API_BASE_URL}/purchase/unique-suppliers`);
         const data = await res.json();
         if (data.suppliers) {
           setSupplierOptions(data.suppliers);
@@ -143,7 +144,7 @@ export default function PurchaseDashboard() {
 
     const fetchInvoices = async () => {
       try {
-        const res = await fetch("http://localhost:5002/api/purchase/unique-invoices");
+        const res = await fetch(`${API_BASE_URL}/purchase/unique-invoices`);
         const data = await res.json();
         if (data.invoices) setInvoiceOptions(data.invoices);
       } catch (e) { }
@@ -165,7 +166,7 @@ export default function PurchaseDashboard() {
     };
 
     // 4. Next Barcode
-    fetch("http://localhost:5002/api/masterdata/next-barcode")
+    fetch(`${API_BASE_URL}/masterdata/next-barcode`)
       .then(r => r.json())
       .then(d => { if (d.nextBarcode) setNextBarcode(d.nextBarcode); }).catch(() => { });
 
@@ -174,7 +175,7 @@ export default function PurchaseDashboard() {
   // Auto-fill Invoice logic (remains)
   useEffect(() => {
     if (header.supplier && supplierOptions.includes(header.supplier)) {
-      fetch("http://localhost:5002/api/purchase/all")
+      fetch(`${API_BASE_URL}/purchase/all`)
         .then(res => res.json())
         .then(data => {
           if (data && Array.isArray(data.bills)) {
@@ -338,7 +339,7 @@ export default function PurchaseDashboard() {
         }))
       };
 
-      const res = await fetch("http://localhost:5002/api/purchase/save", {
+      const res = await fetch(`${API_BASE_URL}/purchase/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -880,7 +881,7 @@ function AddProductModal({ close, nextBarcode, showCoolToast, refreshData }) {
     if (!cat) return alert("Category required");
     if (items.length === 0) return alert("At least one item required");
     try {
-      await fetch("http://localhost:5002/api/masterdata/add-product", {
+      await fetch(`${API_BASE_URL}/masterdata/add-product`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category: cat, items, color: allColors, sizes: SIZES })
       });
@@ -955,7 +956,7 @@ function GstConfigModal({ close, categories }) {
 
   const handleSave = async () => {
     if (!cat || !gst) return;
-    await fetch("http://localhost:5002/api/masterdata/set-gst", {
+    await fetch(`${API_BASE_URL}/masterdata/set-gst`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ category: cat, gst: Number(gst) })
     });
@@ -1016,13 +1017,13 @@ function ModifyProductModal({ close, categories, showCoolToast }) {
 
   useEffect(() => {
     // Fetch all existing colors in software for the color dropdown
-    fetch("http://localhost:5002/api/masterdata/colors")
+    fetch(`${API_BASE_URL}/masterdata/colors`)
       .then(res => res.json())
       .then(data => setSwColors(data.colors || []))
       .catch(() => setSwColors([]));
 
     // Fetch next barcode for prediction
-    fetch("http://localhost:5002/api/masterdata/next-barcode")
+    fetch(`${API_BASE_URL}/masterdata/next-barcode`)
       .then(res => res.json())
       .then(data => setNextBarcode(data.nextBarcode || "PRD-??????"))
       .catch(() => { });
@@ -1123,7 +1124,7 @@ function ModifyProductModal({ close, categories, showCoolToast }) {
     }
 
     try {
-      const res = await fetch("http://localhost:5002/api/masterdata/modify-product", {
+      const res = await fetch(`${API_BASE_URL}/masterdata/modify-product`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +15,7 @@ const SuperAdminStats = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch("http://localhost:5002/api/superadmin/dashboard-stats");
+      const res = await fetch(`${API_BASE_URL}/superadmin/dashboard-stats`);
       const data = await res.json();
       if (res.ok) {
         setStats(data.summary);

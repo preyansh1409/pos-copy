@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 // Dayout Report Panel with cash counting and print logic
 function DayoutReportPanel({ data: parentData }) {
     const [noteCounts, setNoteCounts] = React.useState({
@@ -16,7 +17,7 @@ function DayoutReportPanel({ data: parentData }) {
     React.useEffect(() => {
         const check = async () => {
             try {
-                const res = await fetch("http://localhost:5002/api/dayout/all");
+                const res = await fetch(`${API_BASE_URL}/dayout/all`);
                 if (!res.ok) throw new Error("API error");
                 const d = await res.json();
                 const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
@@ -101,7 +102,7 @@ function DayoutReportPanel({ data: parentData }) {
         }
         // Save to database
         try {
-            const res = await fetch("http://localhost:5002/api/dayout/save", {
+            const res = await fetch(`${API_BASE_URL}/dayout/save`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

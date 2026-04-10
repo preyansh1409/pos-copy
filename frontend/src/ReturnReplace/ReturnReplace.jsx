@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ReturnReplace.css";
@@ -86,7 +87,7 @@ export default function ReturnReplace() {
     // Fetch bills + product catalog + categories on mount
     useEffect(() => {
         const fetchBills = () => {
-            fetch("http://localhost:5002/api/billing/all")
+            fetch(`${API_BASE_URL}/billing/all`)
                 .then(r => r.json())
                 .then(d => { if (d.bills) setAllBills(d.bills); })
                 .catch(() => { });
@@ -96,7 +97,7 @@ export default function ReturnReplace() {
 
         // Start with static catalogue, then merge backend products
         setAllProducts(STATIC_PRODUCTS);
-        fetch("http://localhost:5002/api/masterdata/all-products")
+        fetch(`${API_BASE_URL}/masterdata/all-products`)
             .then(r => r.json())
             .then(d => {
                 if (d.data && Array.isArray(d.data)) {
@@ -119,7 +120,7 @@ export default function ReturnReplace() {
             })
             .catch(() => { });
 
-        fetch("http://localhost:5002/api/masterdata/categories")
+        fetch(`${API_BASE_URL}/masterdata/categories`)
             .then(r => r.json())
             .then(d => {
                 const staticCats = [...new Set(STATIC_PRODUCTS.map(p => p.category))];
@@ -132,15 +133,15 @@ export default function ReturnReplace() {
             })
             .catch(() => { });
 
-        fetch("http://localhost:5002/api/masterdata/all-gst-config")
+        fetch(`${API_BASE_URL}/masterdata/all-gst-config`)
             .then(r => r.json())
             .then(d => { if (d.config) setGstConfig(d.config); })
             .catch(() => { });
-        fetch("http://localhost:5002/api/returns/cash-refunds")
+        fetch(`${API_BASE_URL}/returns/cash-refunds`)
             .then(r => r.json())
             .then(d => { if (d.refunds) setAllCashRefunds(d.refunds); })
             .catch(() => { });
-        fetch("http://localhost:5002/api/returns/credit-notes")
+        fetch(`${API_BASE_URL}/returns/credit-notes`)
             .then(r => r.json())
             .then(d => { if (d.credit_notes) setAllCreditNotes(d.credit_notes); })
             .catch(() => { });
@@ -173,7 +174,7 @@ export default function ReturnReplace() {
         setSelectedIndices([]);
 
         // Re-fetch bills to ensure we have the latest data (e.g. if user just made a sale)
-        fetch("http://localhost:5002/api/billing/all")
+        fetch(`${API_BASE_URL}/billing/all`)
             .then(r => r.json())
             .then(d => { if (d.bills) setAllBills(d.bills); })
             .catch(() => { });
@@ -300,7 +301,7 @@ export default function ReturnReplace() {
         setReturnLoading(true);
         setReturnError("");
         try {
-            const res = await fetch("http://localhost:5002/api/billing/all");
+            const res = await fetch(`${API_BASE_URL}/billing/all`);
             const data = await res.json();
             if (res.ok) {
                 const fresh = (data.bills || []).find(
@@ -461,7 +462,7 @@ export default function ReturnReplace() {
                 refund_mode: refundType === 'cash' ? refundMode : 'Credit'
             };
 
-            const res = await fetch("http://localhost:5002/api/returns/issue-refund", {
+            const res = await fetch(`${API_BASE_URL}/returns/issue-refund`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -494,11 +495,11 @@ export default function ReturnReplace() {
                 setInvoiceInput(""); // Clear the input field
                 setSelectedIndices([]); // Clear selected indices
                 // Refresh the list to reflect the new refund/CN
-                fetch("http://localhost:5002/api/returns/cash-refunds")
+                fetch(`${API_BASE_URL}/returns/cash-refunds`)
                     .then(r => r.json())
                     .then(d => { if (d.refunds) setAllCashRefunds(d.refunds); })
                     .catch(() => { });
-                fetch("http://localhost:5002/api/returns/credit-notes")
+                fetch(`${API_BASE_URL}/returns/credit-notes`)
                     .then(r => r.json())
                     .then(d => { if (d.credit_notes) setAllCreditNotes(d.credit_notes); })
                     .catch(() => { });

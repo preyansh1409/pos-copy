@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import "./Billing.css";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -168,7 +169,7 @@ export default function Billing() {
 
     useEffect(() => {
         // 1. Fetch Categories - only from backend (tenant's real data)
-        fetch("http://localhost:5002/api/masterdata/categories")
+        fetch(`${API_BASE_URL}/masterdata/categories`)
             .then(res => res.json())
             .then(data => {
                 const backendCats = Array.isArray(data.categories) ? data.categories : [];
@@ -176,7 +177,7 @@ export default function Billing() {
             }).catch(() => { });
 
         // 2. Fetch All Products - only from backend
-        fetch("http://localhost:5002/api/masterdata/all-products")
+        fetch(`${API_BASE_URL}/masterdata/all-products`)
             .then(res => res.json())
             .then(data => {
                 const map = {};
@@ -202,13 +203,13 @@ export default function Billing() {
             }).catch(() => { });
 
         // 3. Fetch GST Config
-        fetch("http://localhost:5002/api/masterdata/all-gst-config")
+        fetch(`${API_BASE_URL}/masterdata/all-gst-config`)
             .then(res => res.json())
             .then(data => { if (data.config) setGstConfig(data.config); })
             .catch(() => { });
 
         // 4. Fetch Client Suggestions
-        fetch("http://localhost:5002/api/billing/unique-clients")
+        fetch(`${API_BASE_URL}/billing/unique-clients`)
             .then(res => res.json())
             .then(data => { if (data.clients) setClientSuggestions(data.clients); })
             .catch(() => { });
@@ -370,7 +371,7 @@ export default function Billing() {
     const fetchStockData = async () => {
         setStockLoading(true);
         try {
-            const res = await fetch("http://localhost:5002/api/stock/calculated");
+            const res = await fetch(`${API_BASE_URL}/stock/calculated`);
             const data = await res.json();
             if (res.ok) setStockData(data.stock || []);
         } catch (e) { console.error(e); }
@@ -653,7 +654,7 @@ export default function Billing() {
                         refund_mode: refundModeState,
                         item_ids: itemsToRefund.map(it => it.id)
                     };
-                    await fetch("http://localhost:5002/api/returns/issue-refund", {
+                    await fetch(`${API_BASE_URL}/returns/issue-refund`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(refundPayload)
@@ -678,7 +679,7 @@ export default function Billing() {
                 const normInvoice = invoiceNo.replace(/\s+/g, '');
                 const endpoint = isUpdateMode
                     ? `http://localhost:5002/api/billing/update/${normInvoice}`
-                    : "http://localhost:5002/api/billing/save";
+                    : `${API_BASE_URL}/billing/save`;
 
                 const method = isUpdateMode ? "PUT" : "POST";
 
@@ -1399,7 +1400,7 @@ function DailySummaryModal({ onClose }) {
     useEffect(() => {
         const load = async () => {
             setLoading(true);
-            fetch("http://localhost:5002/api/billing/daily-summary")
+            fetch(`${API_BASE_URL}/billing/daily-summary`)
                 .then(r => r.json())
                 .then(d => setData(d))
                 .finally(() => setLoading(false));

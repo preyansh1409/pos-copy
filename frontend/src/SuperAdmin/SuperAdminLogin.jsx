@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ export default function SuperAdminLogin() {
     }
 
     try {
-      const response = await fetch("http://localhost:5002/api/superadmin/login", {
+      const response = await fetch(`${API_BASE_URL}/superadmin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

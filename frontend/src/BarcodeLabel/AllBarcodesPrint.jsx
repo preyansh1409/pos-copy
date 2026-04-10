@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 
 import React, { useEffect, useState } from "react";
 import { renderBarcodeSVG } from "./barcodeUtils";
@@ -12,7 +13,7 @@ export default function AllBarcodesPrint() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:5002/api/masterdata/all-barcodes")
+    fetch(`${API_BASE_URL}/masterdata/all-barcodes`)
       .then(res => res.json())
       .then(data => {
         const barcodesList = data.barcodes || [];

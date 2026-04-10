@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
@@ -138,7 +139,7 @@ function SalesBill() {
     let isMounted = true;
     const fetchSalesBills = async () => {
       try {
-        const res = await fetch("http://localhost:5002/api/billing/all");
+        const res = await fetch(`${API_BASE_URL}/billing/all`);
         const data = await res.json();
         if (res.ok) {
           if (isMounted) {

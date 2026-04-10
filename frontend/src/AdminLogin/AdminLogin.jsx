@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
@@ -26,7 +27,7 @@ export default function AdminLogin() {
     }
 
     try {
-      const res = await fetch("http://localhost:5002/api/auth/forgot-password", {
+      const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: forgotUsername }),
@@ -54,7 +55,7 @@ export default function AdminLogin() {
     /* ================= LOGIN ================= */
     try {
       // 1. Try regular user login first
-      const res = await fetch("http://localhost:5002/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -88,7 +89,7 @@ export default function AdminLogin() {
       }
 
       // 2. If regular login failed, try superadmin login
-      const saRes = await fetch("http://localhost:5002/api/superadmin/login", {
+      const saRes = await fetch(`${API_BASE_URL}/superadmin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

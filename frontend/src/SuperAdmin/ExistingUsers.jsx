@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./CreateUserProfessional.css";
@@ -43,7 +44,7 @@ const ExistingUsers = () => {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5002/api/superadmin/registrations");
+      const res = await fetch(`${API_BASE_URL}/superadmin/registrations`);
       const data = await res.json();
 
       if (res.ok) {

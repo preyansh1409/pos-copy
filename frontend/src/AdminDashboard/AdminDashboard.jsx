@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import { useState, useEffect, Fragment } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AllBarcodesPrint from "../BarcodeLabel/AllBarcodesPrint";
@@ -269,7 +270,7 @@ export default function AdminDashboard() {
   const fetchDayoutReports = async () => {
     setDayoutLoading(true);
     try {
-      const res = await fetch("http://localhost:5002/api/dayout/all");
+      const res = await fetch(`${API_BASE_URL}/dayout/all`);
       const data = await res.json();
       if (res.ok) setDayoutReports(data.reports || []);
     } catch (err) {
@@ -281,7 +282,7 @@ export default function AdminDashboard() {
   const fetchAdjustmentLogs = async () => {
     setAdjLoading(true);
     try {
-      const res = await fetch("http://localhost:5002/api/stock/logs");
+      const res = await fetch(`${API_BASE_URL}/stock/logs`);
       const data = await res.json();
       if (res.ok) setAdjustmentLogs(data.logs || []);
     } catch (err) {
@@ -293,11 +294,11 @@ export default function AdminDashboard() {
   const fetchReturnHistory = async () => {
     setRrLoading(true);
     try {
-      const cnRes = await fetch("http://localhost:5002/api/returns/credit-notes");
+      const cnRes = await fetch(`${API_BASE_URL}/returns/credit-notes`);
       const cnData = await cnRes.json();
       if (cnRes.ok) setCreditNotes(cnData.credit_notes || []);
 
-      const cashRes = await fetch("http://localhost:5002/api/returns/cash-refunds");
+      const cashRes = await fetch(`${API_BASE_URL}/returns/cash-refunds`);
       const cashData = await cashRes.json();
       if (cashRes.ok) setCashRefunds(cashData.refunds || []);
     } catch { /* ignore */ }
@@ -307,7 +308,7 @@ export default function AdminDashboard() {
   const fetchReplaceHistory = async () => {
     setRrLoading(true);
     try {
-      const res = await fetch("http://localhost:5002/api/returns/all");
+      const res = await fetch(`${API_BASE_URL}/returns/all`);
       const data = await res.json();
       if (res.ok) setReplacements(data.replacements || []);
     } catch { /* ignore */ }
@@ -326,7 +327,7 @@ export default function AdminDashboard() {
   const fetchStockData = async () => {
     setStockLoading(true);
     try {
-      const res = await fetch("http://localhost:5002/api/stock/calculated");
+      const res = await fetch(`${API_BASE_URL}/stock/calculated`);
       const data = await res.json();
       if (res.ok) setStockData(data.stock || []);
     } catch (err) { console.error(err); }
@@ -335,7 +336,7 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async (month = "") => {
     try {
-      let url = "http://localhost:5002/api/dashboard/summary";
+      let url = `${API_BASE_URL}/dashboard/summary`;
       if (month) {
         url += `?month=${month}`;
       }
@@ -369,7 +370,7 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5002/api/auth/get-users");
+      const res = await fetch(`${API_BASE_URL}/auth/get-users`);
       const data = await res.json();
       if (res.ok) setUsers(data.users);
     } catch { /* ignore */ }
@@ -378,11 +379,11 @@ export default function AdminDashboard() {
   const fetchEditLogs = async () => {
     setLogsLoading(true);
     try {
-      const sRes = await fetch("http://localhost:5002/api/billing/all-edit-logs");
+      const sRes = await fetch(`${API_BASE_URL}/billing/all-edit-logs`);
       const sData = await sRes.json();
       if (sRes.ok) setSalesEditLogs(sData.logs || []);
 
-      const pRes = await fetch("http://localhost:5002/api/purchase/all-edit-logs");
+      const pRes = await fetch(`${API_BASE_URL}/purchase/all-edit-logs`);
       const pData = await pRes.json();
       if (pRes.ok) setPurchaseEditLogs(pData.logs || []);
     } catch { /* ignore */ }
@@ -445,7 +446,7 @@ export default function AdminDashboard() {
     if (modalMode === 'edit' && !payload.password) delete payload.password;
 
     const url = modalMode === 'create'
-      ? "http://localhost:5002/api/auth/create-user" // Verify your backend route for create
+      ? `${API_BASE_URL}/auth/create-user` // Verify your backend route for create
       : `http://localhost:5002/api/auth/update-user/${editUserId}`;
 
     const method = modalMode === 'create' ? "POST" : "PUT"; // Use PUT for update if that's what backend expects
@@ -506,7 +507,7 @@ export default function AdminDashboard() {
         adjusted_by
       };
 
-      const res = await fetch("http://localhost:5002/api/stock/adjust", {
+      const res = await fetch(`${API_BASE_URL}/stock/adjust`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

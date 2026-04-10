@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import React, { useState, useEffect } from "react";
 import "./CreateUser.css";
 import "./CreateUserResponsive.css";
@@ -31,7 +32,7 @@ const CreateUser = () => {
 
   const fetchClients = async () => {
     try {
-      const res = await fetch("http://localhost:5002/api/superadmin/registrations");
+      const res = await fetch(`${API_BASE_URL}/superadmin/registrations`);
       const data = await res.json();
       setClients(data.clients);
     } catch (err) {
@@ -61,7 +62,7 @@ const CreateUser = () => {
         payment_method: formData.payment_mode
       };
 
-      const res = await fetch("http://localhost:5002/api/superadmin/register-client", {
+      const res = await fetch(`${API_BASE_URL}/superadmin/register-client`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

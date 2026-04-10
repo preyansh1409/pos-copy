@@ -1,3 +1,4 @@
+import API_BASE_URL from "../apiConfig";
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "./AdminLogin.css"; // Reuse login styles
@@ -41,7 +42,7 @@ export default function ResetPassword() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:5002/api/auth/reset-password", {
+            const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, newPassword }),
