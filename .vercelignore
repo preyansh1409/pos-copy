@@ -1,0 +1,9 @@
+node_modules
+*.sql
+*.log
+dist
+build
+backend/.env
+check_syntax.js
+check_results.txt
+migrate_urls.js
