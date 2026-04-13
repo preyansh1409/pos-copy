@@ -529,8 +529,9 @@ html {
   background: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  overflow: auto;
   margin-top: 24px;
+  max-height: 70vh;
 }
 
 .table-header-actions {
@@ -543,11 +544,12 @@ html {
 
 .users-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 14px;
 }
 
-.users-table th {
+.users-table thead th {
   text-align: left;
   padding: 16px 24px;
   background: linear-gradient(135deg, #1e3a5f, #163754);
@@ -557,6 +559,9 @@ html {
   font-size: 11px;
   letter-spacing: 1px;
   border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .users-table td {
@@ -566,12 +571,41 @@ html {
   color: #374151;
 }
 
-.users-table tr:last-child td {
-  border-bottom: none;
+/* Expanded Row Styles */
+.expanded-row-details {
+  background: #f8fafc;
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-card-premium {
+  padding: 24px;
+  background: white;
+  margin: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.detail-card-premium h4 {
+  margin-bottom: 16px;
+  color: #1e293b;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .users-table tr:hover {
   background-color: #f9fafb;
+}
+
+.users-table tr.active-row {
+  background-color: #f0f9ff;
 }
 
 /* ================= USER CARDS (Option 2) ================= */

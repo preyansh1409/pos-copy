@@ -224,13 +224,13 @@ export default function AdminDashboard() {
   const [modalMode, setModalMode] = useState("create"); // create | edit
   const [editUserId, setEditUserId] = useState(null);
   const [userForm, setUserForm] = useState({ name: "", username: "", email: "", password: "", role: "sales" });
-
-  // --- LOGS STATE ---
   const [salesEditLogs, setSalesEditLogs] = useState([]);
   const [purchaseEditLogs, setPurchaseEditLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(false);
   const [invoiceFilter, setInvoiceFilter] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
+  const [expandedLog, setExpandedLog] = useState(null);
+  const [logBillDetail, setLogBillDetail] = useState(null);
 
   // --- STOCK STATE ---
   const [stockData, setStockData] = useState([]);
@@ -803,31 +803,195 @@ export default function AdminDashboard() {
                 <tbody>
                   {(activePage === 'saleseditlogs' ? salesEditLogs : purchaseEditLogs)
                     .filter(l => !invoiceFilter || l.invoice_no.toLowerCase().includes(invoiceFilter.toLowerCase()))
-                    .map((l, i) => (
-                      <tr key={i} style={{ textAlign: 'center' }}>
-                        <td>{i + 1}</td>
-                        <td style={{ fontWeight: 600 }}>{l.invoice_no}</td>
-                        <td>{l.client_name || l.supplier_name || '-'}</td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                            {l.edited_by}
-                          </div>
-                        </td>
-                        <td style={{ color: '#56688c', fontSize: 13 }}>
-                          {new Date(l.edit_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                            <button className="action-btn btn-edit" onClick={() => setSelectedLog(l)} style={{ margin: 0 }}>
-                              Details
-                            </button>
-                            <button className="action-btn btn-delete" onClick={() => handleDeleteLog(l)} style={{ margin: 0, padding: '6px 10px' }}>
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    .map((l, i) => {
+                      const isExpanded = expandedLog === `${l.id}_${i}`;
+                      return (
+                        <Fragment key={`${l.id}_${i}`}>
+                          <tr
+                            className={isExpanded ? 'active-row' : ''}
+                            style={{ textAlign: 'center', cursor: 'pointer' }}
+                            onClick={async () => {
+                              if (isExpanded) {
+                                setExpandedLog(null);
+                                setLogBillDetail(null);
+                              } else {
+                                setExpandedLog(`${l.id}_${i}`);
+                                // Fetch full current bill for this invoice to show "All Details"
+                                try {
+                                  const type = activePage === 'saleseditlogs' ? 'billing/get-bill' : 'purchase/get-bill';
+                                  const res = await fetch(`${API_BASE_URL}/${type}/${l.invoice_no}`);
+                                  const data = await res.json();
+                                  if (res.ok) setLogBillDetail(data.bill || data.purchase);
+                                } catch (e) { console.error("Error fetching bill details", e); }
+                              }
+                            }}
+                          >
+                            <td>{i + 1}</td>
+                            <td style={{ fontWeight: 800, color: '#1e3a5f' }}>
+                              <span style={{ borderBottom: '1px dashed #1e3a5f' }}>{l.invoice_no}</span>
+                            </td>
+                            <td style={{ fontWeight: 600 }}>{l.client_name || l.supplier_name || '-'}</td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', fontWeight: 700, color: '#4f46e5' }}>
+                                {l.edited_by}
+                              </div>
+                            </td>
+                            <td style={{ color: '#56688c', fontSize: 13, fontWeight: 600 }}>
+                              {new Date(l.edit_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                                <button className="action-btn btn-edit" style={{ margin: 0, padding: '4px 12px' }}>
+                                  {isExpanded ? 'Hide Details' : 'View Details'}
+                                </button>
+                                <button className="action-btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDeleteLog(l); }} style={{ margin: 0, padding: '6px 10px' }}>
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          {/* EXPANDED SECTION: EXACTLY DOWN THE INVOICE NUMBER HEADER AREA */}
+                          {isExpanded && (
+                            <tr className="expanded-row-details">
+                              <td colSpan="6" style={{ padding: 0 }}>
+                                <div className="detail-card-premium">
+                                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
+
+                                    {/* 1. COMPARISON (What was changed in this edit) */}
+                                    <div style={{ paddingRight: '12px', borderRight: '1.5px solid #f1f5f9' }}>
+                                      <h4 style={{ color: '#7c3aed' }}>
+                                        <span>🔄</span> Changes in this Edit
+                                      </h4>
+                                      <table className="users-table" style={{ fontSize: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                                        <thead>
+                                          <tr>
+                                            <th style={{ padding: '8px 12px' }}>Field</th>
+                                            <th style={{ padding: '8px 12px' }}>Old Value</th>
+                                            <th style={{ padding: '8px 12px' }}>New Value</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {(() => {
+                                            let oldD = {}, newD = {};
+                                            try { oldD = JSON.parse(l.old_data || '{}'); } catch { }
+                                            try { newD = JSON.parse(l.new_data || '{}'); } catch { }
+                                            const allKeys = new Set([...Object.keys(oldD), ...Object.keys(newD)]);
+                                            const diffs = Array.from(allKeys).filter(k => k !== 'items' && JSON.stringify(oldD[k]) !== JSON.stringify(newD[k]));
+
+                                            // Extract item changes
+                                            const itemChanges = [];
+                                            if (oldD.items || newD.items) {
+                                              const oItems = oldD.items || [];
+                                              const nItems = newD.items || [];
+                                              // Simplified diff for brevity in expanded row
+                                              const totalOld = oItems.length;
+                                              const totalNew = nItems.length;
+                                              if (totalOld !== totalNew) itemChanges.push({ field: 'Total Items', old: totalOld, new: totalNew });
+                                            }
+
+                                            if (diffs.length === 0 && itemChanges.length === 0) {
+                                              return <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94a3b8' }}>No field changes logged.</td></tr>;
+                                            }
+
+                                            return [
+                                              ...diffs.map(k => (
+                                                <tr key={k}>
+                                                  <td style={{ fontWeight: 700, textTransform: 'capitalize' }}>{k.replace(/_/g, ' ')}</td>
+                                                  <td style={{ color: '#ef4444', textDecoration: 'line-through' }}>{String(oldD[k] || '-')}</td>
+                                                  <td style={{ color: '#059669', fontWeight: 800 }}>{String(newD[k] || '-')}</td>
+                                                </tr>
+                                              )),
+                                              ...(oldD.items || newD.items ? [
+                                                <tr key="items-row">
+                                                  <td style={{ fontWeight: 700 }}>Item List</td>
+                                                  <td style={{ color: '#ef4444' }}>{oldD.items ? `${oldD.items.length} items` : '-'}</td>
+                                                  <td style={{ color: '#059669', fontWeight: 800 }}>{newD.items ? `${newD.items.length} items` : '-'}</td>
+                                                </tr>
+                                              ] : [])
+                                            ];
+                                          })()}
+                                        </tbody>
+                                      </table>
+                                    </div>
+
+                                    {/* 2. FULL BILL VIEW (Current status of the invoice) */}
+                                    <div>
+                                      <h4 style={{ color: '#2563eb' }}>
+                                        <span>📋</span> Full Invoice Summary
+                                      </h4>
+                                      {!logBillDetail ? (
+                                        <div style={{ padding: '20px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>Loading invoice details...</div>
+                                      ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#f8fafc', padding: 12, borderRadius: 8 }}>
+                                            <div>
+                                              <div style={{ fontSize: 10, textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800 }}>Supplier/Client</div>
+                                              <div style={{ fontSize: 13, fontWeight: 700 }}>{logBillDetail.supplier_name || logBillDetail.client_name}</div>
+                                            </div>
+                                            <div>
+                                              <div style={{ fontSize: 10, textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800 }}>Grand Total</div>
+                                              <div style={{ fontSize: 14, fontWeight: 900, color: '#c026d3' }}>₹{Math.round(logBillDetail.grand_total || logBillDetail.total_amount || 0).toLocaleString()}</div>
+                                            </div>
+                                            <div>
+                                              <div style={{ fontSize: 10, textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800 }}>Date</div>
+                                              <div style={{ fontSize: 13, fontWeight: 600 }}>{new Date(logBillDetail.purchase_date || logBillDetail.sale_date).toLocaleDateString()}</div>
+                                            </div>
+                                            <div>
+                                              <div style={{ fontSize: 10, textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800 }}>Status</div>
+                                              <div style={{ fontSize: 12, fontWeight: 700, color: '#059669' }}>{logBillDetail.payment_status || 'Paid'}</div>
+                                            </div>
+                                          </div>
+                                          <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                                            <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+                                              <thead style={{ background: '#f1f5f9' }}>
+                                                <tr>
+                                                  <th style={{ padding: '6px 10px', textAlign: 'left' }}>Item</th>
+                                                  <th style={{ padding: '6px 10px', textAlign: 'center' }}>Size</th>
+                                                  <th style={{ padding: '6px 10px', textAlign: 'center' }}>Qty</th>
+                                                  <th style={{ padding: '6px 10px', textAlign: 'right' }}>Total</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {(typeof logBillDetail.items === 'string' ? JSON.parse(logBillDetail.items) : (logBillDetail.items || [])).slice(0, 5).map((it, idx) => (
+                                                  <tr key={idx} style={{ borderTop: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '6px 10px' }}>{it.item_name || it.name}</td>
+                                                    <td style={{ padding: '6px 10px', textAlign: 'center' }}>{it.size}</td>
+                                                    <td style={{ padding: '6px 10px', textAlign: 'center', fontWeight: 700 }}>{it.qty}</td>
+                                                    <td style={{ padding: '6px 10px', textAlign: 'right', fontWeight: 600 }}>₹{Math.round(it.amount || it.total || (it.qty * it.rate)).toLocaleString()}</td>
+                                                  </tr>
+                                                ))}
+                                                {(typeof logBillDetail.items === 'string' ? JSON.parse(logBillDetail.items) : (logBillDetail.items || [])).length > 5 && (
+                                                  <tr><td colSpan="4" style={{ textAlign: 'center', padding: 4, color: '#94a3b8', fontStyle: 'italic' }}>... and more items</td></tr>
+                                                )}
+                                              </tbody>
+                                            </table>
+                                          </div>
+                                          <button
+                                            className="action-btn btn-edit"
+                                            style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
+                                            onClick={() => {
+                                              if (activePage === 'saleseditlogs') {
+                                                handleViewBill(l.invoice_no);
+                                              } else {
+                                                setViewBill(logBillDetail);
+                                              }
+                                            }}
+                                          >
+                                            View Full Original Bill
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
+                      );
+                    })}
                   {!logsLoading && (activePage === 'saleseditlogs' ? salesEditLogs : purchaseEditLogs).length === 0 && (
                     <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>No edit logs found.</td></tr>
                   )}
@@ -877,185 +1041,8 @@ export default function AdminDashboard() {
         )
       }
 
-      {
-        selectedLog && (
-          <div className="modal-overlay">
-            <div className="modal-box" style={{ maxWidth: '750px', width: '90%', maxHeight: '85vh', overflowY: 'auto', padding: 0 }}>
-              <div style={{ padding: '24px', borderBottom: '1px solid #f3f4f6', position: 'sticky', top: 0, background: 'white', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 className="modal-title" style={{ margin: 0 }}>Log Details: {selectedLog.invoice_no}</h3>
-                  <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>
-                    Edited by <strong>{selectedLog.edited_by}</strong> on {new Date(selectedLog.edit_time).toLocaleString()}
-                  </p>
-                </div>
-                <button onClick={() => setSelectedLog(null)} style={{ background: 'none', border: 'none', fontSize: 24, color: '#9ca3af', cursor: 'pointer' }}>×</button>
-              </div>
 
-              <div style={{ padding: '24px' }}>
-                <div style={{ backgroundColor: '#f9fafb', borderRadius: 12, padding: 20, border: '1px solid #f3f4f6' }}>
-                  <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, color: '#374151', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    Comparison (Changes)
-                  </h4>
 
-                  <table className="users-table" style={{ fontSize: 13, background: 'transparent' }}>
-                    <thead style={{ background: 'linear-gradient(135deg, #1e3a5f, #163754)', color: 'white' }}>
-                      <tr>
-                        <th style={{ padding: '10px 16px' }}>Field</th>
-                        <th style={{ padding: '10px 16px' }}>Old Value</th>
-                        <th style={{ padding: '10px 16px' }}>New Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(() => {
-                        let oldD = {}, newD = {};
-                        try { oldD = JSON.parse(selectedLog.old_data || '{}'); } catch { /* ignore */ }
-                        try { newD = JSON.parse(selectedLog.new_data || '{}'); } catch { /* ignore */ }
-
-                        const allKeys = new Set([...Object.keys(oldD), ...Object.keys(newD)]);
-                        const diffs = Array.from(allKeys).filter(k => {
-                          if (k === 'items') return false;
-                          const oldVal = oldD[k];
-                          const newVal = newD[k];
-                          if (JSON.stringify(oldVal) === JSON.stringify(newVal)) return false;
-                          const emptyVals = [undefined, null, ''];
-                          if ((emptyVals.includes(oldVal) || oldVal === '-') && (emptyVals.includes(newVal) || newVal === '-')) return false;
-                          return true;
-                        });
-
-                        const itemDiffs = [];
-                        if (oldD.items || newD.items) {
-                          const oldItems = oldD.items || [];
-                          const newItems = newD.items || [];
-
-                          const getStrictK = (i) => `${i.category}|${i.item_name || i.name}|${i.size}|${i.color}`;
-                          const getFuzzyK = (i) => `${i.category}|${i.item_name || i.name}|${i.color}`;
-
-                          const unmatchedOld = [...oldItems];
-                          const unmatchedNew = [...newItems];
-
-                          // 1. Strict Match (Same SKU)
-                          for (let i = unmatchedOld.length - 1; i >= 0; i--) {
-                            const o = unmatchedOld[i];
-                            const nIdx = unmatchedNew.findIndex(ni => getStrictK(ni) === getStrictK(o));
-                            if (nIdx !== -1) {
-                              const n = unmatchedNew[nIdx];
-                              const oQty = parseFloat(o.qty || 0);
-                              const nQty = parseFloat(n.qty || 0);
-                              const oRate = parseFloat(o.rate || o.price || 0);
-                              const nRate = parseFloat(n.rate || n.price || 0);
-
-                              const label = `${o.item_name || o.name} (${o.size}/${o.color})`;
-                              if (oQty !== nQty) {
-                                itemDiffs.push({ field: `${label} - Qty`, old: oQty, new: nQty });
-                              }
-                              if (Math.abs(oRate - nRate) > 0.01) {
-                                itemDiffs.push({ field: `${label} - Rate`, old: `₹${oRate.toLocaleString()}`, new: `₹${nRate.toLocaleString()}` });
-                              }
-
-                              unmatchedOld.splice(i, 1);
-                              unmatchedNew.splice(nIdx, 1);
-                            }
-                          }
-
-                          // 2. Fuzzy Match (Size changed for same item/color)
-                          for (let i = unmatchedOld.length - 1; i >= 0; i--) {
-                            const o = unmatchedOld[i];
-                            const nIdx = unmatchedNew.findIndex(ni => getFuzzyK(ni) === getFuzzyK(o));
-                            if (nIdx !== -1) {
-                              const n = unmatchedNew[nIdx];
-                              const label = `${o.item_name || o.name} (${o.color})`;
-
-                              itemDiffs.push({ field: `${label} - Size`, old: o.size, new: n.size });
-
-                              const oQty = parseFloat(o.qty || 0);
-                              const nQty = parseFloat(n.qty || 0);
-                              if (oQty !== nQty) {
-                                itemDiffs.push({ field: `${label} - Qty`, old: oQty, new: nQty });
-                              }
-
-                              const oRate = parseFloat(o.rate || o.price || 0);
-                              const nRate = parseFloat(n.rate || n.price || 0);
-                              if (Math.abs(oRate - nRate) > 0.01) {
-                                itemDiffs.push({ field: `${label} - Rate`, old: `₹${oRate.toLocaleString()}`, new: `₹${nRate.toLocaleString()}` });
-                              }
-
-                              unmatchedOld.splice(i, 1);
-                              unmatchedNew.splice(nIdx, 1);
-                            }
-                          }
-
-                          // 3. Remaining are true Removal/Addition
-                          unmatchedOld.forEach(o => {
-                            const label = `${o.item_name || o.name} (${o.size}/${o.color})`;
-                            itemDiffs.push({ field: label, old: "Item Exists", new: "Removed", isWarning: true });
-                          });
-                          unmatchedNew.forEach(n => {
-                            const label = `${n.item_name || n.name} (${n.size}/${n.color})`;
-                            itemDiffs.push({ field: label, old: "-", new: "Added", isSuccess: true });
-                          });
-                        }
-
-                        return (
-                          <>
-                            {diffs.map(k => (
-                              <tr key={k}>
-                                <td style={{ fontWeight: 600, color: '#4b5563', textTransform: 'capitalize' }}>{k.replace(/_/g, ' ')}</td>
-                                <td style={{ color: '#ef4444', backgroundColor: '#fef2f2', padding: '10px 16px' }}>{String(oldD[k] || '-')}</td>
-                                <td style={{ color: '#059669', backgroundColor: '#ecfdf5', padding: '10px 16px', fontWeight: 500 }}>{String(newD[k] || '-')}</td>
-                              </tr>
-                            ))}
-
-                            {/* Divider if there are item changes */}
-                            {itemDiffs.length > 0 && (
-                              <tr style={{ background: '#f9fafb' }}>
-                                <td colSpan="3" style={{ padding: '12px 16px', fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                  📦 Item Breakdown Changes
-                                </td>
-                              </tr>
-                            )}
-
-                            {/* Render Item Diffs as standard rows */}
-                            {itemDiffs.map((d, idx) => (
-                              <tr key={idx}>
-                                <td style={{ fontWeight: 600, color: '#4b5563', fontSize: 13, padding: '12px 16px' }}>{d.field}</td>
-                                <td style={{
-                                  color: d.isWarning ? '#991b1b' : '#ef4444',
-                                  backgroundColor: d.isWarning ? '#fef2f2' : '#fff',
-                                  padding: '10px 16px',
-                                  fontSize: 13
-                                }}>
-                                  {d.old}
-                                </td>
-                                <td style={{
-                                  color: d.isSuccess ? '#065f46' : '#059669',
-                                  backgroundColor: d.isSuccess ? '#ecfdf5' : '#fff',
-                                  padding: '10px 16px',
-                                  fontWeight: 500,
-                                  fontSize: 13
-                                }}>
-                                  {d.new}
-                                </td>
-                              </tr>
-                            ))}
-
-                            {diffs.length === 0 && itemDiffs.length === 0 && (
-                              <tr><td colSpan="3" style={{ textAlign: 'center', padding: 20, color: '#9ca3af' }}>No significant changes detected.</td></tr>
-                            )}
-                          </>
-                        );
-                      })()}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="modal-actions" style={{ padding: '16px 24px', backgroundColor: '#f9fafb', borderTop: '1px solid #f3f4f6', margin: 0, borderRadius: '0 0 12px 12px' }}>
-                <button className="btn-primary" style={{ maxWidth: '120px', marginLeft: 'auto' }} onClick={() => setSelectedLog(null)}>Close</button>
-              </div>
-            </div>
-          </div>
-        )
-      }
       {/* --- LIVE STOCK VIEW --- */}
       {
         activePage === 'stocks' && (() => {
