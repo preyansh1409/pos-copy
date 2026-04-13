@@ -1246,19 +1246,26 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {cashRefunds.map((r) => (
-                      <tr key={r.id}>
-                        <td
-                          onClick={() => handleViewBill(r.invoice_no)}
-                          style={{ cursor: 'pointer', color: '#1e3a5f', textDecoration: 'underline', fontWeight: 600 }}
-                        >
-                          {r.invoice_no}
-                        </td>
-                        <td style={{ fontWeight: 800, color: '#059669' }}>₹{Math.round(r.amount).toLocaleString()}</td>
-                        <td>{r.issued_by}</td>
-                        <td style={{ fontSize: '11px', color: '#64748b' }}>{new Date(r.refund_date).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
+                    {(() => {
+                      const groups = [];
+                      cashRefunds.forEach(r => {
+                        const existing = groups.find(g => g.invoice_no === r.invoice_no && Math.abs(g.amount - r.amount) < 0.1);
+                        if (!existing) groups.push(r);
+                      });
+                      return groups.map((r) => (
+                        <tr key={r.id}>
+                          <td
+                            onClick={() => handleViewBill(r.invoice_no)}
+                            style={{ cursor: 'pointer', color: '#1e3a5f', textDecoration: 'underline', fontWeight: 600 }}
+                          >
+                            {r.invoice_no}
+                          </td>
+                          <td style={{ fontWeight: 800, color: '#059669' }}>₹{Math.round(r.amount).toLocaleString()}</td>
+                          <td>{r.issued_by}</td>
+                          <td style={{ fontSize: '11px', color: '#64748b' }}>{new Date(r.refund_date).toLocaleDateString()}</td>
+                        </tr>
+                      ));
+                    })()}
                     {cashRefunds.length === 0 && !rrLoading && (
                       <tr><td colSpan="4" style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No cash refunds found</td></tr>
                     )}
