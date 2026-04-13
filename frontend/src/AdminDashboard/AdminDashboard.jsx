@@ -791,13 +791,13 @@ export default function AdminDashboard() {
             <div className="table-container">
               <table className="users-table">
                 <thead>
-                  <tr style={{ textAlign: 'center' }}>
-                    <th style={{ textAlign: 'center' }}>#</th>
-                    <th style={{ textAlign: 'center' }}>Invoice No</th>
-                    <th style={{ textAlign: 'center' }}>{activePage === 'saleseditlogs' ? 'Client' : 'Supplier'}</th>
-                    <th style={{ textAlign: 'center' }}>Edited By</th>
-                    <th style={{ textAlign: 'center' }}>Date & Time</th>
-                    <th style={{ textAlign: 'center' }}>Actions</th>
+                  <tr>
+                    <th style={{ width: '50px' }}>#</th>
+                    <th style={{ width: '150px' }}>Invoice No</th>
+                    <th>{activePage === 'saleseditlogs' ? 'Client' : 'Supplier'}</th>
+                    <th style={{ width: '150px' }}>Edited By</th>
+                    <th style={{ width: '220px' }}>Date & Time</th>
+                    <th style={{ width: '240px' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -809,7 +809,7 @@ export default function AdminDashboard() {
                         <Fragment key={`${l.id}_${i}`}>
                           <tr
                             className={isExpanded ? 'active-row' : ''}
-                            style={{ textAlign: 'center', cursor: 'pointer' }}
+                            style={{ cursor: 'pointer' }}
                             onClick={async () => {
                               if (isExpanded) {
                                 setExpandedLog(null);
@@ -1471,15 +1471,15 @@ export default function AdminDashboard() {
                   <table className="users-table">
                     <thead>
                       <tr>
-                        <th style={{ textAlign: 'center' }}>#</th>
-                        <th style={{ textAlign: 'center' }}>Date</th>
-                        <th style={{ textAlign: 'center' }}>Time</th>
-                        <th style={{ textAlign: 'center' }}>User</th>
-                        <th style={{ textAlign: 'center' }}>Net Cash</th>
-                        <th style={{ textAlign: 'center' }}>Online</th>
-                        <th style={{ textAlign: 'center' }}>Grand Total</th>
-                        <th style={{ textAlign: 'center' }}>Counted Cash</th>
-                        <th style={{ textAlign: 'center' }}>Actions</th>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>User</th>
+                        <th>Net Cash</th>
+                        <th>Online</th>
+                        <th>Grand Total</th>
+                        <th>Counted Cash</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1630,17 +1630,17 @@ export default function AdminDashboard() {
                                       }}
                                       title="Click to view note breakdown"
                                     >
-                                      <td style={{ textAlign: 'center', color: '#64748b', fontSize: 12 }}>{counter}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 600, color: '#334155', fontSize: 13 }}>
+                                      <td style={{ color: '#64748b', fontSize: 12 }}>{counter}</td>
+                                      <td style={{ fontWeight: 600, color: '#334155', fontSize: 13 }}>
                                         {new Date(rpt.report_date).toLocaleDateString('en-IN')}
                                       </td>
-                                      <td style={{ textAlign: 'center', color: '#334155' }}>{rpt.report_time || '-'}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 600, color: '#334155' }}>{rpt.username}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 700, color: '#334155' }}>₹{Number(rpt.net_cash || 0).toLocaleString('en-IN')}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 700, color: '#334155' }}>₹{Number(rpt.online_collection || 0).toLocaleString('en-IN')}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#334155' }}>₹{Number(rpt.grand_total || 0).toLocaleString('en-IN')}</td>
-                                      <td style={{ textAlign: 'center', fontWeight: 700, color: '#334155' }}>₹{Number(rpt.counted_cash || 0).toLocaleString('en-IN')}</td>
-                                      <td style={{ textAlign: 'center' }}>
+                                      <td style={{ color: '#334155' }}>{rpt.report_time || '-'}</td>
+                                      <td style={{ fontWeight: 600, color: '#334155' }}>{rpt.username}</td>
+                                      <td style={{ fontWeight: 700, color: '#334155' }}>₹{Number(rpt.net_cash || 0).toLocaleString('en-IN')}</td>
+                                      <td style={{ fontWeight: 700, color: '#334155' }}>₹{Number(rpt.online_collection || 0).toLocaleString('en-IN')}</td>
+                                      <td style={{ fontWeight: 800, color: '#334155' }}>₹{Number(rpt.grand_total || 0).toLocaleString('en-IN')}</td>
+                                      <td style={{ fontWeight: 700, color: '#334155' }}>₹{Number(rpt.counted_cash || 0).toLocaleString('en-IN')}</td>
+                                      <td>
                                         <button
                                           onClick={async (e) => {
                                             e.stopPropagation();
