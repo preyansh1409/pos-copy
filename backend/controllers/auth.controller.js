@@ -291,15 +291,20 @@ Regards,
 Prestige Garments Management Software`
     };
 
-    // Respond immediately
-    res.json({
+    // Send email - MUST AWAIT on Vercel to prevent function termination
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("✅ Reset request email sent for user:", username);
+    } catch (mailErr) {
+      console.error("❌ NODEMAILER RESET REQ ERROR:", mailErr);
+      // We still return success to the user for security, 
+      // but we log the error for you.
+    }
+
+    // Respond AFTER email is handled
+    return res.json({
       success: true,
       message: "Your reset request has been sent to the administrator!",
-    });
-
-    // Send email in background
-    transporter.sendMail(mailOptions).catch((mailErr) => {
-      console.error("❌ NODEMAILER RESET REQ ERROR:", mailErr);
     });
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
