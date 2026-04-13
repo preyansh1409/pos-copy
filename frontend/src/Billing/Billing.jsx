@@ -505,7 +505,7 @@ export default function Billing() {
 
         // Fetch latest price from backend
         try {
-            const res = await fetch(`http://localhost:5002/api/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
+            const res = await fetch(`${API_BASE_URL}/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
             const data = await res.json();
             finalPrice = Number(data.price) || 0;
             finalBarcode = data.barcode || "";
@@ -553,7 +553,7 @@ export default function Billing() {
 
         // 2. Fetch Backend
         try {
-            const res = await fetch(`http://localhost:5002/api/masterdata/product-by-barcode?barcode=${encodeURIComponent(barcode)}`);
+            const res = await fetch(`${API_BASE_URL}/masterdata/product-by-barcode?barcode=${encodeURIComponent(barcode)}`);
             const data = await res.json();
             if (data.found) {
                 product = { name: data.name, category: data.category, price: data.price || 0 };
@@ -563,7 +563,7 @@ export default function Billing() {
 
                 if (product.price === 0) {
                     // Try fetch price
-                    const pRes = await fetch(`http://localhost:5002/api/masterdata/latest-price?category=${encodeURIComponent(product.category)}&item_name=${encodeURIComponent(product.name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
+                    const pRes = await fetch(`${API_BASE_URL}/masterdata/latest-price?category=${encodeURIComponent(product.category)}&item_name=${encodeURIComponent(product.name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
                     const pData = await pRes.json();
                     if (pData.price > 0) product.price = pData.price;
                 }
@@ -678,7 +678,7 @@ export default function Billing() {
                 // Save to Backend
                 const normInvoice = invoiceNo.replace(/\s+/g, '');
                 const endpoint = isUpdateMode
-                    ? `http://localhost:5002/api/billing/update/${normInvoice}`
+                    ? `${API_BASE_URL}/billing/update/${normInvoice}`
                     : `${API_BASE_URL}/billing/save`;
 
                 const method = isUpdateMode ? "PUT" : "POST";

@@ -269,7 +269,7 @@ export default function ReturnReplace() {
         }
 
         if (bill.is_replaced && activeTab === "return") {
-            fetch(`http://localhost:5002/api/returns/history/${bill.invoice_no}`)
+            fetch(`${API_BASE_URL}/returns/history/${bill.invoice_no}`)
                 .then(res => res.json())
                 .then(data => setReplacementHistory(data.history || []))
                 .catch(() => setReplacementHistory([]));
@@ -347,7 +347,7 @@ export default function ReturnReplace() {
         setReturnError("");
         setShowCnSuggestions(false);
         try {
-            const res = await fetch(`http://localhost:5002/api/returns/search-cn/${encodeURIComponent(query)}`);
+            const res = await fetch(`${API_BASE_URL}/returns/search-cn/${encodeURIComponent(query)}`);
             const data = await res.json();
             if (res.ok && data.success) {
                 // SKIP PREVIEW: Navigate to billing immediately for redemption
@@ -393,7 +393,7 @@ export default function ReturnReplace() {
         setReturnError("");
         setShowCashSuggestions(false);
         try {
-            const res = await fetch(`http://localhost:5002/api/returns/search-cash/${encodeURIComponent(query)}`);
+            const res = await fetch(`${API_BASE_URL}/returns/search-cash/${encodeURIComponent(query)}`);
             const data = await res.json();
             if (res.ok && data.success) {
                 // SKIP PREVIEW: Navigate to billing immediately
@@ -557,7 +557,7 @@ export default function ReturnReplace() {
         if (!item_name || !size || !color) return;
         try {
             const res = await fetch(
-                `http://localhost:5002/api/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(item_name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`
+                `${API_BASE_URL}/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(item_name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`
             );
             const data = await res.json();
             const newRate = Number(data.price) || 0;

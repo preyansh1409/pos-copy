@@ -283,7 +283,7 @@ export default function PurchaseDashboard() {
 
         let latestPrice = 0;
         try {
-          const priceRes = await fetch(`http://localhost:5002/api/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
+          const priceRes = await fetch(`${API_BASE_URL}/masterdata/latest-price?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(name)}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}`);
           if (priceRes.ok) {
             const pData = await priceRes.json();
             latestPrice = pData.price || 0;
@@ -1032,7 +1032,7 @@ function ModifyProductModal({ close, categories, showCoolToast }) {
   useEffect(() => {
     if (selectedCat) {
       // 1. Fetch Items and Merge with Static
-      fetch(`http://localhost:5002/api/masterdata/items-by-category?category=${encodeURIComponent(selectedCat)}`)
+      fetch(`${API_BASE_URL}/masterdata/items-by-category?category=${encodeURIComponent(selectedCat)}`)
         .then(res => res.json())
         .then(data => {
           const backendItems = data.items || []; // Array of {name, code}
@@ -1066,13 +1066,13 @@ function ModifyProductModal({ close, categories, showCoolToast }) {
         });
 
       // 2. Fetch Colors for Category
-      fetch(`http://localhost:5002/api/masterdata/colors-for-category?category=${encodeURIComponent(selectedCat)}`)
+      fetch(`${API_BASE_URL}/masterdata/colors-for-category?category=${encodeURIComponent(selectedCat)}`)
         .then(res => res.json())
         .then(data => setCatColors(data.colors || []))
         .catch(() => setCatColors([]));
 
       // 3. Fetch Sizes for Category
-      fetch(`http://localhost:5002/api/masterdata/sizes-for-category?category=${encodeURIComponent(selectedCat)}`)
+      fetch(`${API_BASE_URL}/masterdata/sizes-for-category?category=${encodeURIComponent(selectedCat)}`)
         .then(res => res.json())
         .then(data => setCatSizes(data.sizes || []))
         .catch(() => setCatSizes([]));
@@ -1088,7 +1088,7 @@ function ModifyProductModal({ close, categories, showCoolToast }) {
   useEffect(() => {
     if (selectedCat && selectedItems.length > 0 && !isAddingItem) {
       // Fetch variants for the first selected item for basic preview
-      fetch(`http://localhost:5002/api/masterdata/existing-variants?category=${encodeURIComponent(selectedCat)}&item=${encodeURIComponent(selectedItems[0])}`)
+      fetch(`${API_BASE_URL}/masterdata/existing-variants?category=${encodeURIComponent(selectedCat)}&item=${encodeURIComponent(selectedItems[0])}`)
         .then(res => res.json())
         .then(data => setExistingVariants(data.variants || []))
         .catch(() => setExistingVariants([]));

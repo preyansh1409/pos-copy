@@ -317,7 +317,7 @@ export default function AdminDashboard() {
 
   const handleViewBill = async (invoice_no) => {
     try {
-      const res = await fetch(`http://localhost:5002/api/billing/get-bill/${encodeURIComponent(invoice_no)}`);
+      const res = await fetch(`${API_BASE_URL}/billing/get-bill/${encodeURIComponent(invoice_no)}`);
       const data = await res.json();
       if (res.ok) setViewBill(data.bill);
       else alert(data.error || "Bill details not found");
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
     if (!window.confirm(`Are you sure you want to delete this log for ${log.invoice_no}?`)) return;
     try {
       const type = activePage === 'saleseditlogs' ? 'billing' : 'purchase';
-      const res = await fetch(`http://localhost:5002/api/${type}/delete-log/${log.id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/${type}/delete-log/${log.id}`, { method: 'DELETE' });
       const data = await res.json();
       if (res.ok) {
         alert(data.message);
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
 
     const url = modalMode === 'create'
       ? `${API_BASE_URL}/auth/create-user` // Verify your backend route for create
-      : `http://localhost:5002/api/auth/update-user/${editUserId}`;
+      : `${API_BASE_URL}/auth/update-user/${editUserId}`;
 
     const method = modalMode === 'create' ? "POST" : "PUT"; // Use PUT for update if that's what backend expects
 
@@ -482,7 +482,7 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (id) => {
     if (!confirm("Delete user?")) return;
     try {
-      await fetch(`http://localhost:5002/api/auth/delete-user/${id}`, { method: "DELETE" });
+      await fetch(`${API_BASE_URL}/auth/delete-user/${id}`, { method: "DELETE" });
       fetchUsers();
     } catch { /* ignore */ }
   };
@@ -1659,7 +1659,7 @@ export default function AdminDashboard() {
                                             e.stopPropagation();
                                             if (!confirm('Delete this dayout report?')) return;
                                             try {
-                                              await fetch(`http://localhost:5002/api/dayout/delete/${rpt.id}`, { method: 'DELETE' });
+                                              await fetch(`${API_BASE_URL}/dayout/delete/${rpt.id}`, { method: 'DELETE' });
                                               fetchDayoutReports();
                                             } catch { /* ignore */ }
                                           }}

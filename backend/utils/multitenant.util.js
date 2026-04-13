@@ -32,7 +32,7 @@ export const setupTenantDatabase = async (dbName) => {
   let setupConn = null;
   try {
     console.log(`🔨 [Multitenancy] Creating database: ${dbName}`);
-    
+
     // 1. Create the database
     await db.promise().query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
 
@@ -41,21 +41,32 @@ export const setupTenantDatabase = async (dbName) => {
     await setupConn.query(`USE \`${dbName}\``);
 
     // 3. Clone each table's schema
+    let clonedCount = 0;
     for (const tableName of TENANT_TABLE_LIST) {
-      console.log(`📋 Cloning table: ${tableName} -> ${dbName}`);
-      
-      // Get the CREATE TABLE statement from the template database (garment_db)
-      const [schemaResult] = await templateDb.promise().query(`SHOW CREATE TABLE \`${tableName}\``);
-      let createSql = schemaResult[0]['Create Table'];
+      try {
+        console.log(`📋 Cloning table: ${tableName} -> ${dbName}`);
 
-      // Remove AUTO_INCREMENT value to start fresh
-      createSql = createSql.replace(/AUTO_INCREMENT=\d+/g, '');
+        // Get the CREATE TABLE statement from the template database (garment_db)
+        const [schemaResult] = await templateDb.promise().query(`SHOW CREATE TABLE \`${tableName}\``);
+        if (!schemaResult || schemaResult.length === 0) {
+          console.warn(`⚠️ Table ${tableName} missing in template database. Skipping.`);
+          continue;
+        }
 
-      // Create the table in the tenant database
-      await setupConn.query(createSql);
+        let createSql = schemaResult[0]['Create Table'];
+
+        // Remove AUTO_INCREMENT value to start fresh
+        createSql = createSql.replace(/AUTO_INCREMENT=\d+/g, '');
+
+        // Create the table in the tenant database
+        await setupConn.query(createSql);
+        clonedCount++;
+      } catch (tableErr) {
+        console.warn(`⚠️ Error cloning table ${tableName}: ${tableErr.message}. Skipping.`);
+      }
     }
 
-    console.log(`✅ Tenant database ${dbName} initialized successfully with ${TENANT_TABLE_LIST.length} tables.`);
+    console.log(`✅ Tenant database ${dbName} initialized. ${clonedCount}/${TENANT_TABLE_LIST.length} tables cloned.`);
     return true;
   } catch (err) {
     console.error(`❌ [Multitenancy] Error setting up database ${dbName}:`, err);

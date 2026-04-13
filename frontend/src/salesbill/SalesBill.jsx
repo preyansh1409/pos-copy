@@ -13,7 +13,7 @@ function EditAuthModal({ bill, onClose, onSuccess }) {
   useEffect(() => {
     // Check edit count for this bill
     if (bill?.invoice_no) {
-      fetch(`http://localhost:5002/api/billing/edit-count/${bill.invoice_no}`)
+      fetch(`${API_BASE_URL}/billing/edit-count/${bill.invoice_no}`)
         .then(res => res.json())
         .then(data => setEditCount(data.editCount || 0))
         .catch(() => setEditCount(0));
@@ -125,7 +125,7 @@ function SalesBill() {
   useEffect(() => {
     const bill = viewBill || viewReplacementHistoryBill;
     if (bill?.invoice_no && bill.is_replaced) {
-      fetch(`http://localhost:5002/api/returns/history/${bill.invoice_no}`)
+      fetch(`${API_BASE_URL}/returns/history/${bill.invoice_no}`)
         .then(res => res.json())
         .then(data => setReplacementHistory(data.history || []))
         .catch(() => setReplacementHistory([]));
@@ -486,7 +486,7 @@ function SalesBill() {
                       <button className="action-btn btn-delete" style={{ padding: '6px 12px' }} onClick={async () => {
                         if (window.confirm('Delete this bill?')) {
                           try {
-                            const res = await fetch(`http://localhost:5002/api/billing/delete/${bill.invoice_no}`, { method: 'DELETE' });
+                            const res = await fetch(`${API_BASE_URL}/billing/delete/${bill.invoice_no}`, { method: 'DELETE' });
                             if (res.ok) {
                               setBills(p => p.filter(b => b.invoice_no !== bill.invoice_no));
                               setFilteredBills(p => p.filter(b => b.invoice_no !== bill.invoice_no));
@@ -795,7 +795,7 @@ function SalesBill() {
             onClose={() => setEditBill(null)}
             onSave={async updated => {
               try {
-                const res = await fetch(`http://localhost:5002/api/billing/update/${updated.invoice_no}`, {
+                const res = await fetch(`${API_BASE_URL}/billing/update/${updated.invoice_no}`, {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ ...updated, edited_by: localStorage.getItem('username') || 'Admin' })

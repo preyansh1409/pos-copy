@@ -62,7 +62,7 @@ const ExistingUsers = () => {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5002/api/superadmin/update-status/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/superadmin/update-status/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
@@ -85,7 +85,7 @@ const ExistingUsers = () => {
     if (!window.confirm(`Are you sure you want to login directly to ${client.business_name}'s database?`)) return;
 
     try {
-      const res = await fetch(`http://localhost:5002/api/superadmin/login-as-shop/${client.id}`, {
+      const res = await fetch(`${API_BASE_URL}/superadmin/login-as-shop/${client.id}`, {
         method: "POST"
       });
       const data = await res.json();

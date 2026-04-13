@@ -19,7 +19,7 @@ const ClientProfile = () => {
 
   const fetchClientData = async () => {
     try {
-      const res = await fetch(`http://localhost:5002/api/superadmin/profile/${id}`);
+      const res = await fetch(`${API_BASE_URL}/superadmin/profile/${id}`);
       const data = await res.json();
       if (res.ok) {
         setClient(data);
@@ -51,7 +51,7 @@ const ClientProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:5002/api/superadmin/profile/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/superadmin/profile/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -75,7 +75,7 @@ const ClientProfile = () => {
     if (!window.confirm(`Are you sure you want to login directly to ${client.business_name}'s database?`)) return;
 
     try {
-      const res = await fetch(`http://localhost:5002/api/superadmin/login-as-shop/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/superadmin/login-as-shop/${id}`, {
         method: "POST"
       });
       const data = await res.json();

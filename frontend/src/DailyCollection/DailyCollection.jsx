@@ -44,7 +44,7 @@ function DayoutReportPanel({ data: parentData }) {
                     setLastDayoutTime(afterTime);
                     // Fetch filtered data — only bills AFTER the last dayout
                     try {
-                        const sRes = await fetch(`http://localhost:5002/api/billing/daily-summary?date=${today}&afterTime=${afterTime}`);
+                        const sRes = await fetch(`${API_BASE_URL}/billing/daily-summary?date=${today}&afterTime=${afterTime}`);
                         if (sRes.ok) {
                             const sData = await sRes.json();
                             setShiftData(sData);
@@ -65,11 +65,11 @@ function DayoutReportPanel({ data: parentData }) {
     const totalOnline = Number(onlineSales);
     const creditNotes = data.creditNoteList || [];
     // eslint-disable-next-line no-unused-vars
-    const issuedCount = creditNotes.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0,10) === new Date().toISOString().slice(0,10)).length;
+    const issuedCount = creditNotes.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)).length;
     // eslint-disable-next-line no-unused-vars
-    const redeemedCount = creditNotes.filter(cn => cn.status === 'Redeemed' && cn.redeemed_date && new Date(cn.redeemed_date).toISOString().slice(0,10) === new Date().toISOString().slice(0,10)).length;
+    const redeemedCount = creditNotes.filter(cn => cn.status === 'Redeemed' && cn.redeemed_date && new Date(cn.redeemed_date).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)).length;
     // eslint-disable-next-line no-unused-vars
-    const creditNoteTotal = creditNotes.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0,10) === new Date().toISOString().slice(0,10)).reduce((sum, cn) => sum + Number(cn.amount || 0), 0);
+    const creditNoteTotal = creditNotes.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)).reduce((sum, cn) => sum + Number(cn.amount || 0), 0);
 
     // Calculate user counted cash
     const countedCash =
@@ -296,7 +296,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyCollection.css";
 
-const API = "http://localhost:5002";
+// using API_BASE_URL directly from imports
 const MODE_ICONS = { Cash: "💵", Online: "📱", Card: "💳", UPI: "📱", Default: "💰" };
 
 function safeParseItems(raw) {
@@ -330,19 +330,19 @@ function BillDetailModal({ invoiceNo, onClose }) {
             setLoading(true);
             setError(null);
             const normInv = invoiceNo.replace(/\s+/g, '');
-            fetch(`${API}/api/billing/get-bill/${normInv}`)
-            .then(r => r.json())
-            .then(d => {
-                if (d.error || !d.bill) throw new Error(d.error || "Bill not found");
-                // Parse items if it's a JSON string
-                const bill = { ...d.bill };
-                if (typeof bill.items === "string") {
-                    try { bill.items = JSON.parse(bill.items); } catch { bill.items = []; }
-                }
-                setBill(bill);
-            })
-            .catch(e => setError(e.message))
-            .finally(() => setLoading(false));
+            fetch(`${API_BASE_URL}/billing/get-bill/${normInv}`)
+                .then(r => r.json())
+                .then(d => {
+                    if (d.error || !d.bill) throw new Error(d.error || "Bill not found");
+                    // Parse items if it's a JSON string
+                    const bill = { ...d.bill };
+                    if (typeof bill.items === "string") {
+                        try { bill.items = JSON.parse(bill.items); } catch { bill.items = []; }
+                    }
+                    setBill(bill);
+                })
+                .catch(e => setError(e.message))
+                .finally(() => setLoading(false));
         };
         load();
     }, [invoiceNo]);
@@ -495,7 +495,7 @@ export default function DailyCollection({ standalone = true, initialTab = "summa
     const fetchData = useCallback(() => {
         setLoading(true);
         setError(null);
-        fetch(`${API}/api/billing/daily-summary?date=${selectedDate}`)
+        fetch(`${API_BASE_URL}/billing/daily-summary?date=${selectedDate}`)
             .then(r => r.json())
             .then(d => {
                 if (d.error) throw new Error(d.error);
@@ -518,8 +518,8 @@ export default function DailyCollection({ standalone = true, initialTab = "summa
     // Calculate issued and redeemed counts for the selected date (ensure always defined)
     let issuedCount = 0, redeemedCount = 0;
     if (data?.creditNoteList) {
-        issuedCount = data.creditNoteList.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0,10) === selectedDate).length;
-        redeemedCount = data.creditNoteList.filter(cn => cn.status === 'Redeemed' && cn.redeemed_date && new Date(cn.redeemed_date).toISOString().slice(0,10) === selectedDate).length;
+        issuedCount = data.creditNoteList.filter(cn => cn.issued_date && new Date(cn.issued_date).toISOString().slice(0, 10) === selectedDate).length;
+        redeemedCount = data.creditNoteList.filter(cn => cn.status === 'Redeemed' && cn.redeemed_date && new Date(cn.redeemed_date).toISOString().slice(0, 10) === selectedDate).length;
     }
 
     const TABS = [
@@ -671,7 +671,7 @@ export default function DailyCollection({ standalone = true, initialTab = "summa
                     <button className="dc-back-btn" onClick={() => navigate("/billing")}>
                         ← Back to Billing
                     </button>
-                    
+
                 </div>
             </aside>
 
