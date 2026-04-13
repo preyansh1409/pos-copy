@@ -249,7 +249,11 @@ export const forgotPassword = async (req, res) => {
     }
 
     if (!role) {
-      return res.status(404).json({ message: "Username not found in the system." });
+      // Security: Always return success message even if username not found
+      return res.json({
+        success: true,
+        message: "Your reset request has been sent to the administrator!",
+      });
     }
 
     // 2. Generate Token
