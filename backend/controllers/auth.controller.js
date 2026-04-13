@@ -205,12 +205,13 @@ const createPasswordResetsTable = () => {
   const sql = `
     CREATE TABLE IF NOT EXISTS password_resets (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
       role VARCHAR(50) NOT NULL,
+      username VARCHAR(255) NOT NULL,
       token VARCHAR(255) NOT NULL,
       expires_at DATETIME NOT NULL,
       INDEX idx_token (token),
-      INDEX idx_username (username)
+      INDEX idx_email (email)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `;
   db.query(sql, (err) => {
@@ -220,41 +221,46 @@ const createPasswordResetsTable = () => {
 };
 createPasswordResetsTable(); // Ensure table exists
 
-/* ================= FORGOT PASSWORD (GENERATE ONLINE RESET LINK) ================= */
+/* ================= FORGOT PASSWORD (SEARCH BY EMAIL) ================= */
 export const forgotPassword = async (req, res) => {
-  const { username } = req.body;
-  if (!username) return res.status(400).json({ message: "Username is required" });
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
-    // 1. Find User Info (Role/Table)
+    // 1. Find User Info (Search across all tables by Email)
+    let user = null;
     let role = "";
-    let userDetails = `Username: ${username}\n`;
 
-    const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE username=?", [username]);
+    // a. Check super_admins
+    const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE email=?", [email]);
     if (superData.length > 0) {
+      user = superData[0];
       role = "superadmin";
-      userDetails += `Role: Super Admin\n`;
     } else {
-      const [clientData] = await db.promise().query("SELECT * FROM clients WHERE username=?", [username]);
+      // b. Check clients
+      const [clientData] = await db.promise().query("SELECT * FROM clients WHERE email=?", [email]);
       if (clientData.length > 0) {
+        user = clientData[0];
         role = "client";
-        userDetails += `Role: Shop Admin\nBusiness: ${clientData[0].business_name}\nShop DB: ${clientData[0].db_name}\n`;
       } else {
-        const [userData] = await db.promise().query("SELECT * FROM users WHERE username=?", [username]);
+        // c. Check users
+        const [userData] = await db.promise().query("SELECT * FROM users WHERE email=?", [email]);
         if (userData.length > 0) {
+          user = userData[0];
           role = "user";
-          userDetails += `Role: Sub-user (${userData[0].role})\nShop DB: ${userData[0].db_name}\nCreated By: ${userData[0].created_by}\n`;
         }
       }
     }
 
     if (!role) {
-      // Security: Always return success message even if username not found
+      // Security: Always return success message even if email not found
       return res.json({
         success: true,
-        message: "Your reset request has been sent to the administrator!",
+        message: "If that email is registered, a reset link has been sent!",
       });
     }
+
+    const username = user.username;
 
     // 2. Generate Token
     const token = crypto.randomBytes(32).toString("hex");
@@ -262,8 +268,8 @@ export const forgotPassword = async (req, res) => {
 
     // 3. Save to password_resets
     await db.promise().query(
-      "INSERT INTO password_resets (username, role, token, expires_at) VALUES (?, ?, ?, ?)",
-      [username, role, token, expires]
+      "INSERT INTO password_resets (email, role, username, token, expires_at) VALUES (?, ?, ?, ?, ?)",
+      [email, role, username, token, expires]
     );
 
     // 4. Construct Reset Link
@@ -271,41 +277,38 @@ export const forgotPassword = async (req, res) => {
 
     const mailOptions = {
       from: `"Prestige POS System" <${transporter.options.auth.user}>`,
-      to: "preyanshpatel1409@gmail.com",
-      subject: `🔑 Password Reset Request - ${username}`,
-      text: `Hello Administrator,
-
-A request has been made to reset the password for the account: ${username}.
-
-USER CONTEXT:
---------------
-${userDetails}
-
-ONLINE RESET LINK (Valid for 1 hour):
-------------------------------------
-${resetLink}
-
-If you did not authorize this, please ignore this email.
-
-Regards,
-Prestige Garments Management Software`
+      to: email, // SEND DIRECTLY TO USER
+      subject: `🔑 Password Reset Request - Prestige Garments`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+          <h2 style="color: #1e3a5f;">Reset Your Password</h2>
+          <p>Hello <b>${user.name || username}</b>,</p>
+          <p>A request has been made to reset your password for the Prestige Garments Management Software.</p>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${resetLink}" style="background-color: #1e3a5f; color: white; padding: 14px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Reset Password</a>
+          </div>
+          <p style="color: #64748b; font-size: 14px;">This link will expire in 1 hour.</p>
+          <p style="color: #64748b; font-size: 14px; margin-top: 24px; border-top: 1px solid #edf2f7; padding-top: 16px;">
+            If you did not request this, please ignore this email.
+          </p>
+        </div>
+      `
     };
 
     // Send email - MUST AWAIT on Vercel to prevent function termination
     try {
       await transporter.sendMail(mailOptions);
-      console.log("✅ Reset request email sent for user:", username);
+      console.log("✅ Reset request email sent directly to user:", email);
     } catch (mailErr) {
       console.error("❌ NODEMAILER RESET REQ ERROR:", mailErr);
-      // We still return success to the user for security, 
-      // but we log the error for you.
     }
 
     // Respond AFTER email is handled
     return res.json({
       success: true,
-      message: "Your reset request has been sent to the administrator!",
+      message: "If that email is registered, a reset link has been sent!",
     });
+
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
     res.status(500).json({ message: "Server error during password reset request." });

@@ -12,7 +12,7 @@ export default function AdminLogin() {
 
   // Forgot Password State
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotUsername, setForgotUsername] = useState("");
+  const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
   const [forgotError, setForgotError] = useState("");
 
@@ -21,8 +21,8 @@ export default function AdminLogin() {
   const handleForgotSubmit = async () => {
     setForgotMessage("");
     setForgotError("");
-    if (!forgotUsername) {
-      setForgotError("Please enter your username");
+    if (!forgotEmail) {
+      setForgotError("Please enter your registered email");
       return;
     }
 
@@ -30,7 +30,7 @@ export default function AdminLogin() {
       const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: forgotUsername }),
+        body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -154,7 +154,7 @@ export default function AdminLogin() {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', marginBottom: '16px' }}>
             <span
-              onClick={() => { setShowForgotModal(true); setForgotMessage(""); setForgotError(""); setForgotUsername(""); }}
+              onClick={() => { setShowForgotModal(true); setForgotMessage(""); setForgotError(""); setForgotEmail(""); }}
               style={{ color: '#1e3a5f', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
             >
               Request Password Reset?
@@ -169,14 +169,14 @@ export default function AdminLogin() {
       {showForgotModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
           <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', width: '100%', maxWidth: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b', fontSize: '20px' }}>Request Reset</h3>
-            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>Enter your username and we'll send a request to the system administrator to reset your password.</p>
+            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b', fontSize: '20px' }}>Reset Password</h3>
+            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>Enter your registered email address and we'll send you a secure link to reset your password.</p>
 
             <input
-              type="text"
-              placeholder="Enter your username"
-              value={forgotUsername}
-              onChange={e => setForgotUsername(e.target.value)}
+              type="email"
+              placeholder="Enter your registered email"
+              value={forgotEmail}
+              onChange={e => setForgotEmail(e.target.value)}
               style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', marginBottom: '16px', boxSizing: 'border-box' }}
             />
 
@@ -199,7 +199,7 @@ export default function AdminLogin() {
                 onClick={handleForgotSubmit}
                 style={{ padding: '10px 20px', background: '#1e3a5f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
               >
-                Send Request
+                Send Link
               </button>
             </div>
           </div>
