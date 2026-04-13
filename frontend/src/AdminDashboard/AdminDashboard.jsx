@@ -396,10 +396,10 @@ export default function AdminDashboard() {
     const init = async () => { fetchDashboardStats(dashboardMonth); };
     init();
 
-    // Refresh interval only if no month filter is active
+    // Refresh interval only if no month filter is active - increased to 60s for performance
     const interval = setInterval(() => {
       if (!dashboardMonth) fetchDashboardStats();
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [dashboardMonth]);

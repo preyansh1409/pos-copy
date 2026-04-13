@@ -799,12 +799,47 @@ function SummaryPanel({ data, totalBills, isToday }) {
    REFUNDS PANEL
 ═══════════════════════════════════════════════════ */
 function RefundsPanel({ list, total, onBillClick, isToday }) {
-    if (list.length === 0) {
+    // Grouping logic to handle duplicates
+    const groupedList = React.useMemo(() => {
+        const groups = [];
+        list.forEach(r => {
+            const existing = groups.find(g => g.invoice_no === r.invoice_no);
+            if (existing) {
+                // If amount is the same and timestamp is very close, it's likely a duplicate
+                // We'll merge the items and take the latest timestamp
+                const existingItems = safeParseItems(existing.returned_items);
+                const newItems = safeParseItems(r.returned_items);
+
+                // Merge uniquely (by some criteria if possible, otherwise just join)
+                const mergedItems = [...existingItems];
+                newItems.forEach(ni => {
+                    if (!mergedItems.find(mi => mi.item_name === ni.item_name && mi.size === ni.size && mi.color === ni.color)) {
+                        mergedItems.push(ni);
+                    }
+                });
+
+                existing.returned_items = JSON.stringify(mergedItems);
+
+                // If amounts are the same, don't add (it's a duplicate record)
+                // If amounts are different, it might be a partial refund logic (though rare in this system)
+                if (Math.abs(existing.amount - r.amount) > 0.1) {
+                    existing.amount += r.amount;
+                }
+            } else {
+                groups.push({ ...r });
+            }
+        });
+        return groups;
+    }, [list]);
+
+    const displayTotal = groupedList.reduce((sum, r) => sum + Number(r.amount || 0), 0);
+
+    if (groupedList.length === 0) {
         return (
             <div className="dc-section">
                 <div className="dc-grand-total-bar dc-bar-red">
                     <span>Total Cash Refunds {isToday ? "Today" : ""}</span>
-                    <span>₹{fmt(total)}</span>
+                    <span>₹{fmt(0)}</span>
                 </div>
                 <div className="dc-empty">✅ No cash refunds issued {isToday ? "today" : "on this date"}.</div>
             </div>
@@ -814,7 +849,7 @@ function RefundsPanel({ list, total, onBillClick, isToday }) {
         <div className="dc-section">
             <div className="dc-grand-total-bar dc-bar-red">
                 <span>Total Cash Refunded {isToday ? "Today" : ""}</span>
-                <span>₹{fmt(total)}</span>
+                <span>₹{fmt(displayTotal)}</span>
             </div>
             <div className="dc-table-wrapper">
                 <table className="dc-table">
@@ -832,7 +867,7 @@ function RefundsPanel({ list, total, onBillClick, isToday }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {list.map((r, i) => {
+                        {groupedList.map((r, i) => {
                             const items = safeParseItems(r.returned_items);
                             return (
                                 <tr key={r.id || i} className="dc-tr-clickable" onClick={() => onBillClick(r.invoice_no)}>

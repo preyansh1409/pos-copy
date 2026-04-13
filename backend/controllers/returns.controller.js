@@ -488,40 +488,55 @@ export const issueRefund = (req, res) => {
             } else {
                 // Cash Refund flow - allow multiple partials
                 const actualRefundMode = refund_mode || bill.payment_mode || 'Cash';
-                const sql = `
-                    INSERT INTO cash_refunds (invoice_no, client_name, phone, amount, issued_by, returned_items, refund_mode)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                `;
-                db.query(sql, [invoice_no, client_name, phone || null, Math.round(amount), issued_by || 'Staff', returnedItemsJson, actualRefundMode], (err) => {
-                    if (err) return res.status(500).json({ error: err.message });
 
-                    // Remove returned items from DB, restore stock, update invoice grand_total
-                    if (item_ids && Array.isArray(item_ids) && item_ids.length > 0) {
-                        // 1. Restore Stock
-                        fRows.forEach(item => {
-                            db.query(
-                                "UPDATE system_stock SET available = available + ? WHERE category = ? AND item_name = ? AND color = ? AND size = ?",
-                                [item.qty, item.category, item.item_name, item.color, item.size]
-                            );
-                        });
-
-                        // 2. Mark items as refunded
-                        db.query("UPDATE sales_items SET is_cash_refunded = 1 WHERE id IN (?)", [item_ids], (updErr) => {
-                            if (updErr) console.error("[issueRefund] Mark Refunded Error:", updErr);
-
-                            // 3. Subtract from bill total
-                            db.query("UPDATE sales_items SET grand_total = GREATEST(0, grand_total - ?) WHERE invoice_no = ?", [amount, invoice_no], (gtErr) => {
-                                if (gtErr) console.error("[issueRefund] GT Update Error:", gtErr);
-                                console.log(`[issueRefund] Bill ${invoice_no} reduced by ₹${amount} for Cash Refund.`);
-                                res.json({ success: true, message: "Cash Refund Processed & Invoice Updated" });
-                            });
-                        });
-                    } else {
-                        db.query("UPDATE sales_items SET is_cash_refunded = 1, grand_total = GREATEST(0, grand_total - ?) WHERE invoice_no = ?", [amount, invoice_no], (updErr) => {
-                            if (updErr) console.error("[issueRefund] GT Update Error:", updErr);
-                            res.json({ success: true, message: "Cash Refund Processed (Global)" });
+                // --- PREVENT DUPLICATES ---
+                // Check if a refund for this invoice and amount was already processed in the last 60 seconds
+                const checkSql = "SELECT id FROM cash_refunds WHERE invoice_no = ? AND amount = ? AND refund_date > NOW() - INTERVAL 1 MINUTE LIMIT 1";
+                db.query(checkSql, [invoice_no, Math.round(amount)], (checkErr, checkRows) => {
+                    if (!checkErr && checkRows.length > 0) {
+                        console.log(`[issueRefund] Duplicate refund blocked for ${invoice_no} (Amount: ${amount})`);
+                        return res.json({
+                            success: true,
+                            message: "Refund already processed (duplicate blocked)",
+                            already_processed: true
                         });
                     }
+
+                    const sql = `
+                        INSERT INTO cash_refunds (invoice_no, client_name, phone, amount, issued_by, returned_items, refund_mode)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    `;
+                    db.query(sql, [invoice_no, client_name, phone || null, Math.round(amount), issued_by || 'Staff', returnedItemsJson, actualRefundMode], (err) => {
+                        if (err) return res.status(500).json({ error: err.message });
+
+                        // Remove returned items from DB, restore stock, update invoice grand_total
+                        if (item_ids && Array.isArray(item_ids) && item_ids.length > 0) {
+                            // 1. Restore Stock
+                            fRows.forEach(item => {
+                                db.query(
+                                    "UPDATE system_stock SET available = available + ? WHERE category = ? AND item_name = ? AND color = ? AND size = ?",
+                                    [item.qty, item.category, item.item_name, item.color, item.size]
+                                );
+                            });
+
+                            // 2. Mark items as refunded
+                            db.query("UPDATE sales_items SET is_cash_refunded = 1 WHERE id IN (?)", [item_ids], (updErr) => {
+                                if (updErr) console.error("[issueRefund] Mark Refunded Error:", updErr);
+
+                                // 3. Subtract from bill total
+                                db.query("UPDATE sales_items SET grand_total = GREATEST(0, grand_total - ?) WHERE invoice_no = ?", [amount, invoice_no], (gtErr) => {
+                                    if (gtErr) console.error("[issueRefund] GT Update Error:", gtErr);
+                                    console.log(`[issueRefund] Bill ${invoice_no} reduced by ₹${amount} for Cash Refund.`);
+                                    res.json({ success: true, message: "Cash Refund Processed & Invoice Updated" });
+                                });
+                            });
+                        } else {
+                            db.query("UPDATE sales_items SET is_cash_refunded = 1, grand_total = GREATEST(0, grand_total - ?) WHERE invoice_no = ?", [amount, invoice_no], (updErr) => {
+                                if (updErr) console.error("[issueRefund] GT Update Error:", updErr);
+                                res.json({ success: true, message: "Cash Refund Processed (Global)" });
+                            });
+                        }
+                    });
                 });
             }
         });
