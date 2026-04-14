@@ -141,8 +141,8 @@ export default function Print() {
         {/* === CENTERED HEADER === */}
         <div className="invoice-header-centered">
           <div className="brand-info">
-            <img src="/logo.jpg" alt="PG Logo" />
-            <h1>Prestige Garments</h1>
+            <img src={localStorage.getItem('logo_url') || '/logo.jpg'} alt="Logo" />
+            <h1>{localStorage.getItem('business_name') || 'Prestige Garments'}</h1>
             <div className="brand-details">
               <p>23, Ravi Complex, Near Paldi Bus Stand, Paldi, Ahmedabad - 380007</p>
               <p>Ph: 1000000000 | preyanshpatel1409@gmail.com</p>

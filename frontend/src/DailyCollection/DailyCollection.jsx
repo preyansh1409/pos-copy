@@ -642,9 +642,14 @@ export default function DailyCollection({ standalone = true, initialTab = "summa
             {/* ── SIDEBAR ── */}
             <aside className="dc-sidebar">
                 <div className="dc-sidebar-brand">
-                    <img src="/spick-logo.png" alt="Logo" className="dc-brand-logo" />
+                    <img
+                        src={localStorage.getItem('logo_url') || '/logo.jpg'}
+                        alt="Logo"
+                        className="dc-brand-logo"
+                        style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: '4px' }}
+                    />
                     <div>
-                        <div className="dc-brand-name">Prestige Garment</div>
+                        <div className="dc-brand-name">{localStorage.getItem('business_name') || 'Prestige Garments'}</div>
                         <div className="dc-brand-sub">Daily Collection</div>
                     </div>
                 </div>

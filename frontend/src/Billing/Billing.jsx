@@ -796,11 +796,15 @@ export default function Billing() {
             {/* === HEADER === */}
             <header className="billing-header" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
                 <div className="header-logo" style={{ display: 'flex', alignItems: 'center', paddingLeft: 20 }}>
-                    <img src="/spick-logo.png" alt="Spick Technology" style={{ height: 40, objectFit: 'contain' }} />
+                    <img
+                        src={localStorage.getItem('logo_url') || '/logo.jpg'}
+                        alt="Logo"
+                        style={{ height: 45, objectFit: 'contain', borderRadius: '4px' }}
+                    />
                 </div>
                 <div className="brand-section" style={{ justifyContent: 'center' }}>
                     <div className="brand-text" style={{ textAlign: 'center' }}>
-                        <h2>Prestige Garment</h2>
+                        <h2>{localStorage.getItem('business_name') || 'Prestige Garments'}</h2>
                         <span>Billing Terminal</span>
                     </div>
                 </div>
