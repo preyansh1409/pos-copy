@@ -97,25 +97,18 @@ export default function Sidebar() {
         <aside className="sidebar">
             <div className="sidebar-header">
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', gap: '10px' }}>
-                    {/* Dynamic Company Branding */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '10px 0' }}>
-                        <img
-                            src={localStorage.getItem('logo_url') || '/logo.jpg'}
-                            alt="Logo"
-                            style={{
-                                width: '80px',
-                                height: '80px',
-                                objectFit: 'contain',
-                                borderRadius: '12px',
-                                background: '#fff',
-                                padding: '5px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                            }}
-                        />
+                    {/* Spick Logo */}
+                    <img src="/spick-logo.png" alt="Spick Technology" className="brand-logo" style={{ maxWidth: '120px' }} />
+
+                    {/* Divider */}
+                    <div style={{ width: '80%', height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+
+                    {/* Client Branding (Dynamic) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                         <span style={{
                             color: '#ffffff',
                             fontWeight: 700,
-                            fontSize: 16,
+                            fontSize: 14,
                             letterSpacing: 1,
                             textTransform: 'uppercase',
                             textAlign: 'center',
@@ -123,6 +116,16 @@ export default function Sidebar() {
                         }}>
                             {localStorage.getItem('business_name') || 'Prestige Garments'}
                         </span>
+                        <img
+                            src={localStorage.getItem('logo_url') || '/logo.jpg'}
+                            alt="Logo"
+                            style={{
+                                width: '50px',
+                                height: '50px',
+                                objectFit: 'contain',
+                                borderRadius: '50%'
+                            }}
+                        />
                     </div>
                 </div>
             </div>
