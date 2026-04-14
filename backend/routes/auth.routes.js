@@ -7,6 +7,7 @@ import {
   deleteUser,
   forgotPassword,
   resetPassword,
+  getTenantBranding,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.put("/update-user/:id", updateUser);
 router.delete("/delete-user/:id", deleteUser);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+router.get("/tenant-branding/:username", getTenantBranding);
 
 export default router;

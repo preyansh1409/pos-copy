@@ -50,6 +50,8 @@ export const login = async (req, res) => {
           user: {
             id: user.id,
             username: user.username,
+            business_name: user.business_name,
+            logo_url: user.logo_url,
             role: user.role || 'admin',
             db_name: user.db_name
           }
@@ -64,13 +66,19 @@ export const login = async (req, res) => {
       const user = userData[0];
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
+        // Fetch client branding for sub-users
+        const [clientBranding] = await db.promise().query("SELECT business_name, logo_url FROM clients WHERE db_name=?", [user.db_name]);
+        const branding = clientBranding[0] || {};
+
         return res.json({
           message: "Login successful",
           user: {
             id: user.id,
             username: user.username,
             role: user.role,
-            db_name: user.db_name
+            db_name: user.db_name,
+            business_name: branding.business_name || null,
+            logo_url: branding.logo_url || null
           }
         });
       }
@@ -357,5 +365,46 @@ export const resetPassword = async (req, res) => {
   } catch (err) {
     console.error("RESET PASSWORD ERROR:", err);
     res.status(500).json({ message: "Server error during password reset." });
+  }
+};
+
+/* ================= GET TENANT BRANDING (PRE-LOGIN) ================= */
+export const getTenantBranding = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // 1. Check if it's a shop admin (clients table)
+    const [clientData] = await db.promise().query(
+      "SELECT business_name, logo_url FROM clients WHERE username = ?",
+      [username]
+    );
+
+    if (clientData.length > 0) {
+      return res.json(clientData[0]);
+    }
+
+    // 2. Check if it's a sub-user (users table)
+    const [userData] = await db.promise().query(
+      "SELECT db_name FROM users WHERE username = ?",
+      [username]
+    );
+
+    if (userData.length > 0) {
+      const dbName = userData[0].db_name;
+      const [branding] = await db.promise().query(
+        "SELECT business_name, logo_url FROM clients WHERE db_name = ?",
+        [dbName]
+      );
+      if (branding.length > 0) {
+        return res.json(branding[0]);
+      }
+    }
+
+    // 3. Fallback to default
+    res.json({ business_name: "Prestige Garments", logo_url: "/logo.jpg" });
+
+  } catch (err) {
+    console.error("BRANDING ERROR:", err);
+    res.status(500).json({ message: "Error fetching branding" });
   }
 };

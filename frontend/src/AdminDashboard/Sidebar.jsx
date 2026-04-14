@@ -105,8 +105,8 @@ export default function Sidebar() {
 
                     {/* Prestige Branding */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: '#ffffff', fontWeight: 700, fontSize: 14, letterSpacing: 1, textTransform: 'uppercase', textAlign: 'center' }}>Prestige Garments</span>
-                        <img src="/logo.jpg" alt="Prestige Garments" style={{ width: '50px', borderRadius: '50%' }} />
+                        <span style={{ color: '#ffffff', fontWeight: 700, fontSize: 14, letterSpacing: 1, textTransform: 'uppercase', textAlign: 'center' }}>{localStorage.getItem('business_name') || 'Prestige Garments'}</span>
+                        <img src={localStorage.getItem('logo_url') || '/logo.jpg'} alt="Logo" style={{ width: '50px', borderRadius: '50%' }} />
                     </div>
                 </div>
             </div>

@@ -27,7 +27,8 @@ const PORT = process.env.PORT || 5002;
 
 /* ================= MIDDLEWARE ================= */
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(tenantMiddleware);
 
 /* ================= ROUTES ================= */
@@ -57,9 +58,9 @@ app.get("/api/db-test", async (req, res) => {
     res.json({ status: "success", message: "Database connected!", data: rows });
   } catch (err) {
     console.error("❌ Database Test Failed:", err);
-    res.status(500).json({ 
-      status: "error", 
-      message: "Database connection failed", 
+    res.status(500).json({
+      status: "error",
+      message: "Database connection failed",
       error: err.message,
       stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
@@ -76,4 +77,4 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-export default app;
+export default app;

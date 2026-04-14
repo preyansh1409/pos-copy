@@ -31,6 +31,7 @@ const initSuperAdminDatabase = async () => {
       last_payment_date DATE,
       payment_method VARCHAR(50),
       db_name VARCHAR(255),
+      logo_url LONGTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -56,6 +57,18 @@ const initSuperAdminDatabase = async () => {
     console.log("✅ clients table ready");
     await db.promise().query(usersTable);
     console.log("✅ users table ready");
+
+    // Seed default super admin if table is empty
+    const [existing] = await db.promise().query("SELECT id FROM super_admins LIMIT 1");
+    if (existing.length === 0) {
+      const bcrypt = await import("bcryptjs");
+      const hashedPassword = await bcrypt.default.hash("admin", 10);
+      await db.promise().query(
+        "INSERT INTO super_admins (username, password, role) VALUES (?, ?, ?)",
+        ["super", hashedPassword, "superadmin"]
+      );
+      console.log("👤 Default Super Admin created: super / admin");
+    }
   } catch (err) {
     console.error("Error initializing superadmin system tables:", err);
   }

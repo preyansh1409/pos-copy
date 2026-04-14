@@ -70,6 +70,8 @@ export default function AdminLogin() {
         localStorage.setItem("username", data.user.username || username);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("db_name", data.user.db_name || "");
+        localStorage.setItem("business_name", data.user.business_name || "Prestige Garments");
+        localStorage.setItem("logo_url", data.user.logo_url || "/logo.jpg");
 
         /* ================= AUTO NAVIGATION ================= */
         if (backendRole === "superadmin") {
@@ -120,11 +122,15 @@ export default function AdminLogin() {
 
         <div className="admin-left-panel">
           <div className="brand-wrapper">
-            <h1 className="brand-title">Prestige Garments</h1>
+            <h1 className="brand-title">{localStorage.getItem("business_name") || "Prestige Garments"}</h1>
             <p className="brand-subtitle">ERP Management System</p>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
-            <img src="/logo.jpg" alt="PG Logo" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }} />
+            <img
+              src={localStorage.getItem("logo_url") || "/logo.jpg"}
+              alt="Logo"
+              style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }}
+            />
           </div>
           <div className="left-footer">Secure • Fast • Reliable</div>
         </div>

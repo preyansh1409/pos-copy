@@ -89,13 +89,15 @@ const ExistingUsers = () => {
         method: "POST"
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         localStorage.setItem("role", data.user.role);
         localStorage.setItem("username", data.user.username);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("db_name", data.user.db_name || "");
-        
+        localStorage.setItem("business_name", data.user.business_name || "Prestige Garments");
+        localStorage.setItem("logo_url", data.user.logo_url || "/logo.jpg");
+
         window.location.href = "/admin-dashboard";
       } else {
         alert("Failed to login as shop: " + data.message);
@@ -195,13 +197,13 @@ const ExistingUsers = () => {
                       <div style={{ fontWeight: "500", textAlign: "center" }}>{client.plan_name}</div>
                     </td>
                     <td style={{ textAlign: "center" }}>
-                      <code 
+                      <code
                         onClick={(e) => handleOpenDatabase(e, client)}
-                        style={{ 
-                          background: "#eff6ff", 
+                        style={{
+                          background: "#eff6ff",
                           color: "#2563eb",
-                          padding: "2px 6px", 
-                          borderRadius: "4px", 
+                          padding: "2px 6px",
+                          borderRadius: "4px",
                           fontSize: "0.85rem",
                           cursor: "pointer",
                           textDecoration: "underline"

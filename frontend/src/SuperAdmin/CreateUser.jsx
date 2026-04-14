@@ -8,6 +8,7 @@ import "./CreateUserProfessional.css";
 const CreateUser = () => {
   const [formData, setFormData] = useState({
     business_name: "",
+    logo_url: "",
     email: "",
     phone: "",
     client_name: "",
@@ -41,7 +42,46 @@ const CreateUser = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    let updatedData = { ...formData, [name]: value };
+
+    const plans = {
+      "Basic": { months: 4, amount: 4500 },
+      "Standard": { months: 6, amount: 6000 },
+      "Premium": { months: 12, amount: 10000 }
+    };
+
+    if (name === "plan_name" || name === "start_date") {
+      const plan = name === "plan_name" ? value : formData.plan_name;
+      const startDate = name === "start_date" ? value : formData.start_date;
+
+      if (plan && plans[plan]) {
+        updatedData.amount = plans[plan].amount;
+        if (startDate) {
+          const start = new Date(startDate);
+          const end = new Date(start);
+          end.setMonth(start.getMonth() + plans[plan].months);
+          updatedData.expiry_date = end.toISOString().split('T')[0];
+        }
+      }
+    }
+
+    setFormData(updatedData);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("File is too large! Please choose a file under 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, logo_url: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -52,6 +92,7 @@ const CreateUser = () => {
       const payload = {
         client_name: formData.client_name,
         business_name: formData.business_name,
+        logo_url: formData.logo_url,
         email: formData.email,
         phone: formData.phone,
         username: formData.username,
@@ -67,7 +108,7 @@ const CreateUser = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      
+
       const data = await res.json();
 
       if (res.ok) {
@@ -94,6 +135,7 @@ const CreateUser = () => {
   const resetForm = () => {
     setFormData({
       business_name: "",
+      logo_url: "",
       email: "",
       phone: "",
       client_name: "",
@@ -124,16 +166,54 @@ const CreateUser = () => {
               <input type="text" name="business_name" value={formData.business_name} onChange={handleChange} required />
             </div>
             <div className="form-group">
+              <label>Company Logo*</label>
+              <div
+                className="file-upload-wrapper"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  handleFileChange({ target: { files: e.dataTransfer.files } });
+                }}
+                style={{
+                  border: '2px dashed #cbd5e1',
+                  borderRadius: '8px',
+                  padding: '10px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  background: '#f8fafc'
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0,
+                    cursor: 'pointer'
+                  }}
+                />
+                {formData.logo_url ? (
+                  <img src={formData.logo_url} alt="Logo Preview" style={{ maxWidth: '100%', maxHeight: '60px', borderRadius: '4px' }} />
+                ) : (
+                  <div style={{ color: '#64748b', fontSize: '12px' }}>
+                    Drag & Drop or Click to Upload
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="form-group">
               <label>Email*</label>
               <input type="email" name="email" value={formData.email} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label>Phone*</label>
               <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
-            </div>
-            <div className="form-group">
-              <label>Created At</label>
-              <input type="date" name="client_created_at" onChange={handleChange} />
             </div>
           </div>
 

@@ -36,7 +36,7 @@ export const superAdminLogin = async (req, res) => {
 /* ================= REGISTER CLIENT (SHOP OWNER) ================= */
 export const registerClient = async (req, res) => {
   const {
-    client_name, business_name, email, phone, address,
+    client_name, business_name, logo_url, email, phone, address,
     username, password,
     plan_name, plan_duration_months,
     payment_amount, payment_method
@@ -63,15 +63,15 @@ export const registerClient = async (req, res) => {
 
     const q = `
       INSERT INTO clients (
-        client_name, business_name, email, phone, address,
+        client_name, business_name, logo_url, email, phone, address,
         username, password, status, role,
         plan_name, plan_start_date, plan_end_date, is_subscription_active,
         last_payment_amount, last_payment_date, payment_method, db_name
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', 'admin', ?, ?, ?, ?, ?, CURDATE(), ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', 'admin', ?, ?, ?, ?, ?, CURDATE(), ?, ?)
     `;
 
     const params = [
-      client_name, business_name, email, phone, address || null,
+      client_name, business_name, logo_url || null, email, phone, address || null,
       username, hashedPassword,
       plan_name || 'Trial', startDate, endDate, plan_duration_months ? 1 : 0,
       payment_amount || 0.00, payment_method || null, db_name
@@ -158,7 +158,7 @@ export const getClientProfile = (req, res) => {
 export const updateClientProfile = (req, res) => {
   const { id } = req.params;
   const {
-    client_name, business_name, email, phone, address,
+    client_name, business_name, logo_url, email, phone, address,
     username, role, status,
     plan_name, plan_start_date, plan_end_date, is_subscription_active,
     last_payment_amount, last_payment_date, payment_method
@@ -166,7 +166,7 @@ export const updateClientProfile = (req, res) => {
 
   let q = `
     UPDATE clients SET 
-      client_name=?, business_name=?, email=?, phone=?, address=?,
+      client_name=?, business_name=?, logo_url=?, email=?, phone=?, address=?,
       username=?, role=?, status=?,
       plan_name=?, plan_start_date=?, plan_end_date=?, is_subscription_active=?,
       last_payment_amount=?, last_payment_date=?, payment_method=?,
@@ -174,7 +174,7 @@ export const updateClientProfile = (req, res) => {
   `;
 
   const params = [
-    client_name, business_name, email, phone, address,
+    client_name, business_name, logo_url, email, phone, address,
     username, role, status,
     plan_name, plan_start_date, plan_end_date, is_subscription_active,
     last_payment_amount, last_payment_date, payment_method
@@ -239,15 +239,15 @@ export const getDashboardStats = (req, res) => {
 /* ================= DEVELOPER: LOGIN AS SHOP ================= */
 export const developerLoginAsShop = (req, res) => {
   const { id } = req.params;
-  
-  const q = "SELECT id, username, business_name, role, db_name FROM clients WHERE id = ?";
-  
+
+  const q = "SELECT id, username, business_name, logo_url, role, db_name FROM clients WHERE id = ?";
+
   db.query(q, [id], (err, data) => {
     if (err) return res.status(500).json({ message: "Database error" });
     if (data.length === 0) return res.status(404).json({ message: "Client not found" });
 
     const client = data[0];
-    
+
     // Simulate a successful login for this client
     res.json({
       message: `Developer bypass: Logging in as ${client.business_name}`,
@@ -256,6 +256,8 @@ export const developerLoginAsShop = (req, res) => {
         username: client.username,
         role: client.role || 'admin',
         db_name: client.db_name,
+        business_name: client.business_name,
+        logo_url: client.logo_url,
         is_developer_bypass: true
       }
     });

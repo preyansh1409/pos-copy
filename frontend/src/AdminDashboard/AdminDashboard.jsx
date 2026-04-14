@@ -571,7 +571,7 @@ export default function AdminDashboard() {
                       textAlign: 'center',
                       minWidth: 220
                     }}>
-                      Welcome, Admin@123
+                      Welcome, {localStorage.getItem('business_name') || 'Admin@123'}
                     </span>
                   </div>
                 );
@@ -590,7 +590,7 @@ export default function AdminDashboard() {
                       textAlign: 'center',
                       minWidth: 220
                     }}>
-                      Welcome, {username}
+                      Welcome, {localStorage.getItem('business_name') || username}
                     </span>
                   </div>
                 );

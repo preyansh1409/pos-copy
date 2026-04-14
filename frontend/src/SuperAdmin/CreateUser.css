@@ -1,28 +1,33 @@
 .section-heading {
   margin-top: 2.5rem;
 }
+
 .create-user-form {
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   padding: 2rem 2.5rem;
-  max-width: 1000px;
-  margin: 2rem auto;
+  width: 98%;
+  margin: 1rem auto;
 }
+
 .create-user-form h3 {
   text-align: center;
   margin-bottom: 2rem;
   color: #2d3a4b;
 }
+
 .create-user-form .form-group {
   margin-bottom: 1.3rem;
 }
+
 .create-user-form label {
   display: block;
   margin-bottom: 0.4rem;
   font-weight: 500;
   color: #333;
 }
+
 .create-user-form input,
 .create-user-form select,
 .create-user-form textarea {
@@ -34,12 +39,14 @@
   background: #f9fafb;
   transition: border 0.2s;
 }
+
 .create-user-form input:focus,
 .create-user-form select:focus,
 .create-user-form textarea:focus {
   border: 1.5px solid #1976d2;
   outline: none;
 }
+
 .create-user-form button {
   width: 100%;
   padding: 0.8rem;
@@ -53,6 +60,7 @@
   margin-top: 1.2rem;
   transition: background 0.2s;
 }
+
 .create-user-form button:hover {
   background: #125ea2;
 }
