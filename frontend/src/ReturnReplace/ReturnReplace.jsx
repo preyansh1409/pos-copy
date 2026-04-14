@@ -1401,6 +1401,9 @@ export default function ReturnReplace() {
                         style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: '4px' }}
                     />
                     <div className="rr-sidebar-name">{localStorage.getItem('business_name') || 'Prestige Garments'}</div>
+                    <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '8px', lineHeight: '1.2' }}>
+                        {localStorage.getItem('business_address') || 'Address not set'} | Ph: {localStorage.getItem('business_phone') || 'N/A'}
+                    </div>
                     <div className="rr-sidebar-module">Refund & Return</div>
                 </div>
 

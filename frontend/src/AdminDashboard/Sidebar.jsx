@@ -141,6 +141,13 @@ export default function Sidebar() {
                         </button>
 
                         <button
+                            className={`menu-item ${isActive(null, 'personalinfo') ? 'active' : ''}`}
+                            onClick={() => navigate('/admin-dashboard', { state: { page: 'personalinfo' } })}
+                        >
+                            Personal Information
+                        </button>
+
+                        <button
                             className={`menu-item ${isGroupActive('collection') ? 'active' : ''}`}
                             onClick={() => setShowCollectionMenu(!showCollectionMenu)}
                         >

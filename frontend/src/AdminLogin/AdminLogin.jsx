@@ -94,10 +94,13 @@ export default function AdminLogin() {
         localStorage.setItem("db_name", data.user.db_name || "");
 
         // Update Branding
-        const bName = data.user.business_name || "Prestige Garments";
-        const lUrl = data.user.logo_url || "/logo.jpg";
-        localStorage.setItem("business_name", bName);
-        localStorage.setItem("logo_url", lUrl);
+        localStorage.setItem("business_name", data.user.business_name || "Prestige Garments");
+        localStorage.setItem("logo_url", data.user.logo_url || "/logo.jpg");
+        localStorage.setItem("business_address", data.user.address || "");
+        localStorage.setItem("business_phone", data.user.phone || "");
+        localStorage.setItem("plan_detail", data.user.plan_detail || "Trial");
+        localStorage.setItem("plan_expiry", data.user.plan_expiry || "");
+        localStorage.setItem("role", backendRole);
 
         /* ================= AUTO NAVIGATION ================= */
         if (backendRole === "superadmin") {
