@@ -144,8 +144,8 @@ export default function Print() {
             <img src={localStorage.getItem('logo_url') || '/logo.jpg'} alt="Logo" />
             <h1>{localStorage.getItem('business_name') || 'Prestige Garments'}</h1>
             <div className="brand-details">
-              <p>{localStorage.getItem('business_address') || "23, Ravi Complex, Near Paldi Bus Stand, Paldi, Ahmedabad - 380007"}</p>
-              <p>Ph: {localStorage.getItem('business_phone') || "1000000000"} | {localStorage.getItem('username')}@gmail.com</p>
+              <p>23, Ravi Complex, Near Paldi Bus Stand, Paldi, Ahmedabad - 380007</p>
+              <p>Ph: 1000000000 | preyanshpatel1409@gmail.com</p>
             </div>
           </div>
         </div>

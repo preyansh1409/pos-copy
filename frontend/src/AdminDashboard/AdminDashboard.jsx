@@ -3,7 +3,6 @@ import { useState, useEffect, Fragment } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AllBarcodesPrint from "../BarcodeLabel/AllBarcodesPrint";
 import DailyCollection from "../DailyCollection/DailyCollection";
-import PersonalInfo from "./PersonalInfo";
 
 const SUBSCRIPTION_END = new Date("2027-01-01");
 
@@ -713,11 +712,6 @@ export default function AdminDashboard() {
         <div style={{ padding: '0px' }}>
           <DailyCollection standalone={false} initialTab={location.state?.activeTab || "summary"} />
         </div>
-      )}
-
-      {/* --- PERSONAL INFO VIEW --- */}
-      {activePage === 'personalinfo' && (
-        <PersonalInfo />
       )}
 
       {/* --- USERS VIEW --- */}

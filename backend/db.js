@@ -15,7 +15,7 @@ const dbConfig = {
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0,
   ssl: process.env.DB_SSL === 'true' ? {
     rejectUnauthorized: false
@@ -38,7 +38,7 @@ const tenantPools = {};
 
 export const getTenantDb = (dbName) => {
   if (!dbName) return masterDb;
-  
+
   if (!tenantPools[dbName]) {
     // console.log(`📡 Connecting to tenant database: ${dbName}`);
     tenantPools[dbName] = mysql.createPool({
@@ -63,9 +63,9 @@ export const tenantMiddleware = (req, res, next) => {
 
   // Get db_name from header (sent by frontend)
   const dbName = req.headers['x-db-name'];
-  
+
   const connection = dbName ? getTenantDb(dbName) : masterDb;
-  
+
   // Run subsequent middleware and routes within the context of this connection
   dbStorage.run(connection, () => {
     next();
@@ -79,10 +79,10 @@ const dbProxy = new Proxy(masterDb, {
     if (prop === 'constructor' || prop === 'prototype' || typeof prop === 'symbol') {
       return target[prop];
     }
-    
+
     // 2. Identification of the active database
     const activeDb = dbStorage.getStore() || masterDb;
-    
+
     // 3. Special handling for some common properties
     if (prop === 'promise') {
       if (typeof activeDb.promise === 'function') {
@@ -93,17 +93,17 @@ const dbProxy = new Proxy(masterDb, {
 
     try {
       const value = activeDb[prop];
-      
+
       if (typeof value === 'function') {
         // Essential: bind the function to activeDb so 'this' is correct inside it
         return value.bind(activeDb);
       }
-      
+
       // Fallback for missing property on activeDb
       if (value === undefined) {
         return target[prop];
       }
-      
+
       return value;
     } catch (err) {
       // console.error(`❌ Proxy error accessing "${String(prop)}":`, err.message);

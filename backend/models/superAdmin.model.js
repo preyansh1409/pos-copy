@@ -16,18 +16,24 @@ const initSuperAdminDatabase = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       client_name VARCHAR(255) NOT NULL,
       business_name VARCHAR(255) NOT NULL,
-      email VARCHAR(255),
-      phone VARCHAR(50),
+      email VARCHAR(255) NOT NULL UNIQUE,
+      phone VARCHAR(20) NOT NULL,
       address TEXT,
       username VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       role VARCHAR(50) DEFAULT 'client',
-      status ENUM('pending', 'active', 'rejected') DEFAULT 'active',
-      plan_detail VARCHAR(255) DEFAULT 'Trial',
-      plan_expiry DATE,
-      db_name VARCHAR(255) NOT NULL,
+      status ENUM('pending', 'active', 'rejected') DEFAULT 'pending',
+      plan_name VARCHAR(100) DEFAULT 'Trial',
+      plan_start_date DATE,
+      plan_end_date DATE,
+      is_subscription_active BOOLEAN DEFAULT FALSE,
+      last_payment_amount DECIMAL(10, 2) DEFAULT 0.00,
+      last_payment_date DATE,
+      payment_method VARCHAR(50),
+      db_name VARCHAR(255),
       logo_url LONGTEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `;
 
@@ -39,10 +45,6 @@ const initSuperAdminDatabase = async () => {
       password VARCHAR(255) NOT NULL,
       role VARCHAR(50) NOT NULL,
       db_name VARCHAR(255),
-      logo_url LONGTEXT,
-      business_name VARCHAR(255),
-      address TEXT,
-      phone VARCHAR(50),
       created_by VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

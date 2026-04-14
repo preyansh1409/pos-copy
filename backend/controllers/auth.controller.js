@@ -52,11 +52,6 @@ export const login = async (req, res) => {
             username: user.username,
             business_name: user.business_name,
             logo_url: user.logo_url,
-            address: user.address,
-            phone: user.phone,
-            email: user.email,
-            plan_detail: user.plan_detail,
-            plan_expiry: user.plan_expiry,
             role: user.role || 'admin',
             db_name: user.db_name
           }
@@ -72,7 +67,7 @@ export const login = async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         // Fetch client branding for sub-users
-        const [clientBranding] = await db.promise().query("SELECT business_name, logo_url, address, phone, plan_detail, plan_expiry FROM clients WHERE db_name=?", [user.db_name]);
+        const [clientBranding] = await db.promise().query("SELECT business_name, logo_url FROM clients WHERE db_name=?", [user.db_name]);
         const branding = clientBranding[0] || {};
 
         return res.json({
@@ -83,11 +78,7 @@ export const login = async (req, res) => {
             role: user.role,
             db_name: user.db_name,
             business_name: branding.business_name || null,
-            logo_url: branding.logo_url || null,
-            address: branding.address || null,
-            phone: branding.phone || null,
-            plan_detail: branding.plan_detail || null,
-            plan_expiry: branding.plan_expiry || null
+            logo_url: branding.logo_url || null
           }
         });
       }
@@ -97,7 +88,7 @@ export const login = async (req, res) => {
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message, stack: err.stack });
   }
 };
 
@@ -377,21 +368,6 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-/* ================= UPDATE BRANDING ================= */
-export const updateBranding = async (req, res) => {
-  const { username, business_name, address, phone, logo_url } = req.body;
-
-  try {
-    const q = "UPDATE clients SET business_name=?, address=?, phone=?, logo_url=? WHERE username=?";
-    await db.promise().query(q, [business_name, address, phone, logo_url, username]);
-
-    res.json({ success: true, message: "Branding updated successfully" });
-  } catch (err) {
-    console.error("UPDATE BRANDING ERROR:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 /* ================= GET TENANT BRANDING (PRE-LOGIN) ================= */
 export const getTenantBranding = async (req, res) => {
   const { username } = req.params;
@@ -429,6 +405,6 @@ export const getTenantBranding = async (req, res) => {
 
   } catch (err) {
     console.error("BRANDING ERROR:", err);
-    res.status(500).json({ message: "Error fetching branding" });
+    res.status(500).json({ message: "Error fetching branding", error: err.message, stack: err.stack });
   }
 };
