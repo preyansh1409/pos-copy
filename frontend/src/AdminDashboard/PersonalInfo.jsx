@@ -33,14 +33,17 @@ const PersonalInfo = () => {
             const res = await fetch(`${API_BASE_URL}/auth/update-client-info/${user.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    address: formData.address,
+                    phone: formData.phone,
+                    business_name: formData.business_name,
+                    logo_url: formData.logo_url
+                })
             });
 
             if (res.ok) {
-                localStorage.setItem("business_name", formData.business_name);
                 localStorage.setItem("address", formData.address);
                 localStorage.setItem("phone", formData.phone);
-                localStorage.setItem("logo_url", formData.logo_url);
                 setMessage({ type: "success", text: "Information updated successfully! Refreshing..." });
                 setIsEditing(false);
                 setTimeout(() => window.location.reload(), 1500);
@@ -60,10 +63,10 @@ const PersonalInfo = () => {
                 <h1 className="dashboard-title">Personal Information</h1>
                 <button
                     className="action-btn"
-                    style={{ background: isEditing ? '#64748b' : '#1e3a5f' }}
+                    style={{ background: isEditing ? '#64748b' : '#1e3a5f', color: 'white' }}
                     onClick={() => setIsEditing(!isEditing)}
                 >
-                    {isEditing ? "Cancel" : "Edit Profile"}
+                    {isEditing ? "Cancel" : "Edit Details"}
                 </button>
             </div>
 
@@ -92,31 +95,11 @@ const PersonalInfo = () => {
                                 alt="Logo"
                                 style={{ width: '80px', height: '80px', borderRadius: '12px', objectFit: 'contain', border: '1px solid #e2e8f0' }}
                             />
-                            {isEditing && (
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>LOGO URL</label>
-                                    <input
-                                        name="logo_url"
-                                        value={formData.logo_url}
-                                        onChange={handleChange}
-                                        style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         <div>
                             <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>COMPANY NAME</label>
-                            {isEditing ? (
-                                <input
-                                    name="business_name"
-                                    value={formData.business_name}
-                                    onChange={handleChange}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', marginTop: '5px' }}
-                                />
-                            ) : (
-                                <div style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', marginTop: '5px' }}>{formData.business_name}</div>
-                            )}
+                            <div style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', marginTop: '5px' }}>{formData.business_name}</div>
                         </div>
 
                         <div>
