@@ -15,7 +15,7 @@
 }
 
 .admin-card-login {
-  width: 900px;
+  width: 450px;
   height: 460px;
   display: flex;
   border-radius: 14px;
@@ -154,6 +154,7 @@
 .admin-right-panel button:hover {
   background: #12304a;
 }
+
 .admin-error-message {
   color: #ff4d4f;
   font-size: 12px;

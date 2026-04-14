@@ -148,23 +148,7 @@ export default function AdminLogin() {
   return (
     <div className="admin-login-container">
       <div className="admin-card-login">
-
-        <div className="admin-left-panel">
-          <div className="brand-wrapper">
-            <h1 className="brand-title">{branding.name}</h1>
-            <p className="brand-subtitle">Cloud Point of Sale</p>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
-            <img
-              src={branding.logo}
-              alt="Logo"
-              style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }}
-            />
-          </div>
-          <div className="left-footer">Secure • Fast • Reliable</div>
-        </div>
-
-        <div className="admin-right-panel">
+        <div className="admin-right-panel" style={{ width: '100%' }}>
           <h2 className="login-title">Sign In</h2>
 
           <input
