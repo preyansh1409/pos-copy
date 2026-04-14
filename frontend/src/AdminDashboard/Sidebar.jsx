@@ -187,12 +187,6 @@ export default function Sidebar() {
                             </div>
                         )}
 
-                        <button
-                            className={`menu-item ${isActive(null, 'personalinfo') ? 'active' : ''}`}
-                            onClick={() => navigate('/admin-dashboard', { state: { page: 'personalinfo' } })}
-                        >
-                            Personal Information
-                        </button>
 
                         <button
                             className={`menu-item ${isActive(null, 'users') ? 'active' : ''}`}
@@ -312,6 +306,12 @@ export default function Sidebar() {
                                 </button>
                             </div>
                         )}
+                        <button
+                            className={`menu-item ${isActive(null, 'personalinfo') ? 'active' : ''}`}
+                            onClick={() => navigate('/admin-dashboard', { state: { page: 'personalinfo' } })}
+                        >
+                            Personal Information
+                        </button>
                     </>
                 )}
 
@@ -358,44 +358,46 @@ export default function Sidebar() {
             </div>
 
             {/* Support Modal */}
-            {showSupportModal && (
-                <div className="modal-overlay" style={{ zIndex: 9999 }}>
-                    <div className="modal-box" style={{ maxWidth: '400px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '40px', marginBottom: '15px' }}><img src="/spick-logo.png" alt="Spick Technology" className="brand-logo" style={{ maxWidth: '120px' }} /></div>
-                        <h3 className="modal-title">Spick Technology Support</h3>
-                        <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
-                            Our team is here to help you with any queries or technical issues.
-                        </p>
+            {
+                showSupportModal && (
+                    <div className="modal-overlay" style={{ zIndex: 9999 }}>
+                        <div className="modal-box" style={{ maxWidth: '400px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '40px', marginBottom: '15px' }}><img src="/spick-logo.png" alt="Spick Technology" className="brand-logo" style={{ maxWidth: '120px' }} /></div>
+                            <h3 className="modal-title">Spick Technology Support</h3>
+                            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
+                                Our team is here to help you with any queries or technical issues.
+                            </p>
 
-                        <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', textAlign: 'left', marginBottom: '20px' }}>
-                            <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontSize: '18px' }}>📞</span>
-                                <div>
-                                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>PHONE NUMBER</div>
-                                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>1000000000</div>
+                            <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', textAlign: 'left', marginBottom: '20px' }}>
+                                <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <span style={{ fontSize: '18px' }}>📞</span>
+                                    <div>
+                                        <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>PHONE NUMBER</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>1000000000</div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <span style={{ fontSize: '18px' }}>✉️</span>
+                                    <div>
+                                        <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>EMAIL ADDRESS</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>preyanshpatel1409@gmail.com</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontSize: '18px' }}>✉️</span>
-                                <div>
-                                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>EMAIL ADDRESS</div>
-                                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>preyanshpatel1409@gmail.com</div>
-                                </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <button className="btn-primary" style={{ width: '100%', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }} onClick={() => handleSupportRequest('renewal')}>
+                                    Send subscription renew request
+                                </button>
+
+                                <button className="btn-secondary" style={{ width: '100%' }} onClick={() => setShowSupportModal(false)}>
+                                    Close
+                                </button>
                             </div>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <button className="btn-primary" style={{ width: '100%', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }} onClick={() => handleSupportRequest('renewal')}>
-                                Send subscription renew request
-                            </button>
-
-                            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => setShowSupportModal(false)}>
-                                Close
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </aside >
     );
 }
