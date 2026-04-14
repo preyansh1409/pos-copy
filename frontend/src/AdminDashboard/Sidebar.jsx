@@ -114,7 +114,7 @@ export default function Sidebar() {
                             textAlign: 'center',
                             maxWidth: '180px'
                         }}>
-                            {localStorage.getItem('business_name') || 'Prestige Garments'}
+                            {localStorage.getItem('business_name') || 'Point of Sale Software'}
                         </span>
                         <img
                             src={localStorage.getItem('logo_url') || '/logo.jpg'}

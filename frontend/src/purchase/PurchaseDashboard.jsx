@@ -407,7 +407,7 @@ export default function PurchaseDashboard() {
         </div>
         <div className="brand-section" style={{ justifyContent: 'center' }}>
           <div className="brand-text" style={{ textAlign: 'center' }}>
-            <h2>{localStorage.getItem('business_name') || 'Prestige Garments'}</h2>
+            <h2>{localStorage.getItem('business_name') || 'Point of Sale Software'}</h2>
             <span>Purchase Dashboard</span>
           </div>
         </div>

@@ -95,7 +95,7 @@ const ExistingUsers = () => {
         localStorage.setItem("username", data.user.username);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("db_name", data.user.db_name || "");
-        localStorage.setItem("business_name", data.user.business_name || "Prestige Garments");
+        localStorage.setItem("business_name", data.user.business_name || "Point of Sale Software");
         localStorage.setItem("logo_url", data.user.logo_url || "/logo.jpg");
 
         window.location.href = "/admin-dashboard";

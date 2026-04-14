@@ -649,7 +649,7 @@ export default function DailyCollection({ standalone = true, initialTab = "summa
                         style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: '4px' }}
                     />
                     <div>
-                        <div className="dc-brand-name">{localStorage.getItem('business_name') || 'Prestige Garments'}</div>
+                        <div className="dc-brand-name">{localStorage.getItem('business_name') || 'Point of Sale Software'}</div>
                         <div className="dc-brand-sub">Daily Collection</div>
                     </div>
                 </div>

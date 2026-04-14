@@ -71,11 +71,11 @@ export default function ResetPassword() {
 
                 <div className="admin-left-panel">
                     <div className="brand-wrapper">
-                        <h1 className="brand-title">Prestige Garments</h1>
-                        <p className="brand-subtitle">ERP Management System</p>
+                        <h1 className="brand-title">Point of Sale Software</h1>
+                        <p className="brand-subtitle">Cloud Point of Sale</p>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
-                        <img src="/logo.jpg" alt="PG Logo" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }} />
+                        <div className="pos-icon">🔑</div>
                     </div>
                     <div className="left-footer">Secure • Fast • Reliable</div>
                 </div>
