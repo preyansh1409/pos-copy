@@ -144,8 +144,8 @@ export default function Print() {
             <img src={localStorage.getItem('logo_url') || '/logo.jpg'} alt="Logo" />
             <h1>{localStorage.getItem('business_name') || 'Point of Sale Software'}</h1>
             <div className="brand-details">
-              <p>23, Ravi Complex, Near Paldi Bus Stand, Paldi, Ahmedabad - 380007</p>
-              <p>Ph: 1000000000 | preyanshpatel1409@gmail.com</p>
+              <p>{localStorage.getItem('address') || "23, Ravi Complex, Near Paldi Bus Stand, Ahmedabad"}</p>
+              <p>Ph: {localStorage.getItem('phone') || "1000000000"}</p>
             </div>
           </div>
         </div>

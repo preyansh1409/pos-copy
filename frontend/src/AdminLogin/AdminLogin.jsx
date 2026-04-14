@@ -98,6 +98,13 @@ export default function AdminLogin() {
         const lUrl = data.user.logo_url || "/logo.jpg";
         localStorage.setItem("business_name", bName);
         localStorage.setItem("logo_url", lUrl);
+        localStorage.setItem("address", data.user.address || "");
+        localStorage.setItem("phone", data.user.phone || "");
+        localStorage.setItem("email", data.user.email || "");
+        localStorage.setItem("plan_name", data.user.plan_name || "");
+        localStorage.setItem("plan_start_date", data.user.plan_start_date || "");
+        localStorage.setItem("plan_end_date", data.user.plan_end_date || "");
+        localStorage.setItem("last_payment_amount", data.user.last_payment_amount || "");
 
         /* ================= AUTO NAVIGATION ================= */
         if (backendRole === "superadmin") {

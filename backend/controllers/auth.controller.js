@@ -52,6 +52,13 @@ export const login = async (req, res) => {
             username: user.username,
             business_name: user.business_name,
             logo_url: user.logo_url,
+            address: user.address,
+            phone: user.phone,
+            email: user.email,
+            plan_name: user.plan_name,
+            plan_start_date: user.plan_start_date,
+            plan_end_date: user.plan_end_date,
+            last_payment_amount: user.last_payment_amount,
             role: user.role || 'admin',
             db_name: user.db_name
           }
@@ -406,5 +413,23 @@ export const getTenantBranding = async (req, res) => {
   } catch (err) {
     console.error("BRANDING ERROR:", err);
     res.status(500).json({ message: "Error fetching branding", error: err.message, stack: err.stack });
+  }
+};
+
+/* ================= UPDATE CLIENT INFO (Personal Info) ================= */
+export const updateClientInfo = async (req, res) => {
+  const { id } = req.params;
+  const { business_name, address, phone, logo_url } = req.body;
+
+  try {
+    await db.promise().query(
+      "UPDATE clients SET business_name = ?, address = ?, phone = ?, logo_url = ? WHERE id = ?",
+      [business_name, address, phone, logo_url, id]
+    );
+
+    res.json({ success: true, message: "Information updated successfully!" });
+  } catch (err) {
+    console.error("UPDATE CLIENT ERROR:", err);
+    res.status(500).json({ message: "Failed to update information" });
   }
 };

@@ -805,7 +805,11 @@ export default function Billing() {
                 <div className="brand-section" style={{ justifyContent: 'center' }}>
                     <div className="brand-text" style={{ textAlign: 'center' }}>
                         <h2>{localStorage.getItem('business_name') || 'Point of Sale Software'}</h2>
-                        <span>Billing Terminal</span>
+                        <div style={{ fontSize: '12px', opacity: 0.8, fontWeight: 500 }}>
+                            {localStorage.getItem('address') && <span>{localStorage.getItem('address')} | </span>}
+                            {localStorage.getItem('phone') && <span>Ph: {localStorage.getItem('phone')}</span>}
+                        </div>
+                        <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', display: 'block' }}>Billing Terminal</span>
                     </div>
                 </div>
                 <div className="header-actions" style={{ justifyContent: 'flex-end' }}>
