@@ -53,7 +53,7 @@ export default function SuperAdminLogin() {
       <div className="admin-card-login">
         <div className="admin-left-panel">
           <div className="brand-wrapper">
-            <h1 className="brand-title">POS Software</h1>
+            <h1 className="brand-title">Point of Sale Software</h1>
             <p className="brand-subtitle">Super Admin Portal</p>
           </div>
           <div className="pos-icon-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>

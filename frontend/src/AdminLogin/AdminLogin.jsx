@@ -17,8 +17,8 @@ export default function AdminLogin() {
   const [forgotMessage, setForgotMessage] = useState("");
   // --- Dynamic Branding State ---
   const [branding, setBranding] = useState({
-    name: localStorage.getItem("business_name") || "POS Software",
-    logo: localStorage.getItem("logo_url") || "/logo.jpg"
+    name: "Point of Sale Software",
+    logo: "/logo.jpg"
   });
 
   const fetchBranding = async (uname) => {
@@ -28,7 +28,7 @@ export default function AdminLogin() {
       if (res.ok) {
         const data = await res.json();
         setBranding({
-          name: data.business_name || "POS Software",
+          name: data.business_name || "Point of Sale Software",
           logo: data.logo_url || "/logo.jpg"
         });
       }
@@ -94,7 +94,7 @@ export default function AdminLogin() {
         localStorage.setItem("db_name", data.user.db_name || "");
 
         // Update Branding
-        const bName = data.user.business_name || "POS Software";
+        const bName = data.user.business_name || "Point of Sale Software";
         const lUrl = data.user.logo_url || "/logo.jpg";
         localStorage.setItem("business_name", bName);
         localStorage.setItem("logo_url", lUrl);
