@@ -35,7 +35,7 @@ export default function SuperAdminLogin() {
         localStorage.setItem("username", data.user.username);
         // If your system uses tokens, you would save it here too:
         // localStorage.setItem("token", data.token);
-        
+
         navigate("/superadmin-dashboard");
       } else {
         setError(data.message || "Invalid username or password");
@@ -51,17 +51,7 @@ export default function SuperAdminLogin() {
   return (
     <div className="admin-login-container">
       <div className="admin-card-login">
-        <div className="admin-left-panel">
-          <div className="brand-wrapper">
-            <h1 className="brand-title">Prestige Garments</h1>
-            <p className="brand-subtitle">ERP Management System</p>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
-            <img src="/logo.jpg" alt="PG Logo" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }} />
-          </div>
-          <div className="left-footer">Super Admin • Secure</div>
-        </div>
-        <div className="admin-right-panel">
+        <div className="admin-right-panel" style={{ width: '100%' }}>
           <h2 className="login-title">Super Admin Sign In</h2>
           <input
             type="text"
