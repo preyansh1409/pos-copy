@@ -401,7 +401,7 @@ export const getTenantBranding = async (req, res) => {
     }
 
     // 3. Fallback to default
-    res.json({ business_name: "Prestige Garments", logo_url: "/logo.jpg" });
+    res.json({ business_name: "POS Software", logo_url: "/logo.jpg" });
 
   } catch (err) {
     console.error("BRANDING ERROR:", err);

@@ -17,7 +17,7 @@ export default function AdminLogin() {
   const [forgotMessage, setForgotMessage] = useState("");
   // --- Dynamic Branding State ---
   const [branding, setBranding] = useState({
-    name: localStorage.getItem("business_name") || "Prestige Garments",
+    name: localStorage.getItem("business_name") || "POS Software",
     logo: localStorage.getItem("logo_url") || "/logo.jpg"
   });
 
@@ -28,7 +28,7 @@ export default function AdminLogin() {
       if (res.ok) {
         const data = await res.json();
         setBranding({
-          name: data.business_name || "Prestige Garments",
+          name: data.business_name || "POS Software",
           logo: data.logo_url || "/logo.jpg"
         });
       }
@@ -94,7 +94,7 @@ export default function AdminLogin() {
         localStorage.setItem("db_name", data.user.db_name || "");
 
         // Update Branding
-        const bName = data.user.business_name || "Prestige Garments";
+        const bName = data.user.business_name || "POS Software";
         const lUrl = data.user.logo_url || "/logo.jpg";
         localStorage.setItem("business_name", bName);
         localStorage.setItem("logo_url", lUrl);
@@ -152,7 +152,7 @@ export default function AdminLogin() {
         <div className="admin-left-panel">
           <div className="brand-wrapper">
             <h1 className="brand-title">{branding.name}</h1>
-            <p className="brand-subtitle">ERP Management System</p>
+            <p className="brand-subtitle">Cloud Point of Sale</p>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
             <img
