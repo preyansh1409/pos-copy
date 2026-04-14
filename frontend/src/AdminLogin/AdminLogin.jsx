@@ -14,7 +14,27 @@ export default function AdminLogin() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
-  const [forgotError, setForgotError] = useState("");
+  // --- Dynamic Branding State ---
+  const [branding, setBranding] = useState({
+    name: localStorage.getItem("business_name") || "Prestige Garments",
+    logo: localStorage.getItem("logo_url") || "/logo.jpg"
+  });
+
+  const fetchBranding = async (uname) => {
+    if (!uname || uname.length < 3) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/tenant-branding/${uname}`);
+      if (res.ok) {
+        const data = await res.json();
+        setBranding({
+          name: data.business_name || "Prestige Garments",
+          logo: data.logo_url || "/logo.jpg"
+        });
+      }
+    } catch (err) {
+      console.error("Branding fetch failed");
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -66,12 +86,17 @@ export default function AdminLogin() {
       if (res.ok) {
         const backendRole = data.user.role;
 
+        // Save session
         localStorage.setItem("role", backendRole);
         localStorage.setItem("username", data.user.username || username);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("db_name", data.user.db_name || "");
-        localStorage.setItem("business_name", data.user.business_name || "Prestige Garments");
-        localStorage.setItem("logo_url", data.user.logo_url || "/logo.jpg");
+
+        // Update Branding
+        const bName = data.user.business_name || "Prestige Garments";
+        const lUrl = data.user.logo_url || "/logo.jpg";
+        localStorage.setItem("business_name", bName);
+        localStorage.setItem("logo_url", lUrl);
 
         /* ================= AUTO NAVIGATION ================= */
         if (backendRole === "superadmin") {
@@ -102,6 +127,9 @@ export default function AdminLogin() {
       if (saRes.ok) {
         localStorage.setItem("role", "superadmin");
         localStorage.setItem("username", saData.user.username);
+        // Reset Branding to default for superadmin
+        localStorage.setItem("business_name", "Super Admin");
+        localStorage.setItem("logo_url", "/logo.jpg");
         navigate("/superadmin-dashboard");
         return;
       }
@@ -122,12 +150,12 @@ export default function AdminLogin() {
 
         <div className="admin-left-panel">
           <div className="brand-wrapper">
-            <h1 className="brand-title">{localStorage.getItem("business_name") || "Prestige Garments"}</h1>
+            <h1 className="brand-title">{branding.name}</h1>
             <p className="brand-subtitle">ERP Management System</p>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '32px 0 18px 0' }}>
             <img
-              src={localStorage.getItem("logo_url") || "/logo.jpg"}
+              src={branding.logo}
               alt="Logo"
               style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 12, boxShadow: '0 2px 8px rgba(44,62,80,0.10)' }}
             />
@@ -143,6 +171,7 @@ export default function AdminLogin() {
             placeholder="Username"
             value={username}
             onChange={(e) => { setUsername(e.target.value); setInputError(false); setError(""); }}
+            onBlur={() => fetchBranding(username)}
             style={inputError ? { border: '1.5px solid #e53935', background: '#fff6f6' } : {}}
           />
 
