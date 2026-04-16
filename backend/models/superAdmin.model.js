@@ -6,6 +6,7 @@ const initSuperAdminDatabase = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE,
       role VARCHAR(50) DEFAULT 'superadmin',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -43,6 +44,7 @@ const initSuperAdminDatabase = async () => {
       name VARCHAR(255) NOT NULL,
       username VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
+      email VARCHAR(255),
       role VARCHAR(50) NOT NULL,
       db_name VARCHAR(255),
       created_by VARCHAR(255),
@@ -57,6 +59,14 @@ const initSuperAdminDatabase = async () => {
     console.log("✅ clients table ready");
     await db.promise().query(usersTable);
     console.log("✅ users table ready");
+    
+    // Migration: Add email columns if they don't exist
+    try {
+      await db.promise().query("ALTER TABLE super_admins ADD COLUMN email VARCHAR(255) UNIQUE AFTER password");
+    } catch(e) { /* already exists */ }
+    try {
+      await db.promise().query("ALTER TABLE users ADD COLUMN email VARCHAR(255) AFTER password");
+    } catch(e) { /* already exists */ }
 
     // Seed default super admin if table is empty
     const [existing] = await db.promise().query("SELECT id FROM super_admins LIMIT 1");
@@ -64,10 +74,13 @@ const initSuperAdminDatabase = async () => {
       const bcrypt = await import("bcryptjs");
       const hashedPassword = await bcrypt.default.hash("admin", 10);
       await db.promise().query(
-        "INSERT INTO super_admins (username, password, role) VALUES (?, ?, ?)",
-        ["super", hashedPassword, "superadmin"]
+        "INSERT INTO super_admins (username, password, email, role) VALUES (?, ?, ?, ?)",
+        ["super", hashedPassword, "preyanshpatel1409@gmail.com", "superadmin"]
       );
       console.log("👤 Default Super Admin created: super / admin");
+    } else {
+      // Ensure super user has email
+      await db.promise().query("UPDATE super_admins SET email='preyanshpatel1409@gmail.com' WHERE username='super' AND email IS NULL");
     }
   } catch (err) {
     console.error("Error initializing superadmin system tables:", err);

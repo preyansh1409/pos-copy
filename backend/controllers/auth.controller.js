@@ -7,8 +7,8 @@ import nodemailer from "nodemailer";
 /* ================= EMAIL TRANSPORTER ================= */
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // Use TLS
   auth: {
     user: process.env.SMTP_USER || "preyanshpatel1409@gmail.com",
     pass: process.env.SMTP_PASS || "ftvg qrst mppb dhof",
@@ -101,7 +101,7 @@ export const login = async (req, res) => {
 
 /* ================= CREATE USER ================= */
 export const createUser = async (req, res) => {
-  const { name, username, password, role, created_by, db_name } = req.body;
+  const { name, username, password, role, email, created_by, db_name } = req.body;
 
   if (!name || !username || !password || !role) {
     return res.status(400).json({ message: "All fields required" });
@@ -120,11 +120,10 @@ export const createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const q =
-      "INSERT INTO users (name, username, password, role, created_by, db_name) VALUES (?,?,?,?,?,?)";
-
+      "INSERT INTO users (name, username, password, role, email, created_by, db_name) VALUES (?,?,?,?,?,?,?)";
     const [result] = await db
       .promise()
-      .query(q, [name, username, hashedPassword, role, created_by || "System", db_name || null]);
+      .query(q, [name, username, hashedPassword, role, email || null, created_by || "System", db_name || null]);
 
     res.status(201).json({
       message: "User created successfully",
@@ -268,12 +267,14 @@ export const forgotPassword = async (req, res) => {
     }
 
     if (!role) {
+      console.warn(`⚠️ Forgot request for UNKNOWN email: ${email}`);
       // Security: Always return success message even if email not found
       return res.json({
         success: true,
         message: "If that email is registered, a reset link has been sent!",
       });
     }
+    console.log(`🔍 Found ${role} account for email: ${email} (username: ${user.username})`);
 
     const username = user.username;
 
