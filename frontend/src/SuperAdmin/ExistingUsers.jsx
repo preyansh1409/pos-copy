@@ -171,6 +171,7 @@ const ExistingUsers = () => {
           <table className="clients-table">
             <thead>
               <tr>
+                <th style={{ textAlign: "center" }}>Logo</th>
                 <th>Company Name</th>
                 <th>Client Name</th>
                 <th style={{ textAlign: "center" }}>Email</th>
@@ -189,6 +190,14 @@ const ExistingUsers = () => {
                     className="clickable"
                     title="Click to view full profile"
                   >
+                    <td style={{ textAlign: "center" }}>
+                      <img 
+                        src={client.logo_url || "/logo.jpg"} 
+                        alt="Logo" 
+                        style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", border: "1px solid #ddd" }}
+                        onError={(e) => e.target.src = "/logo.jpg"}
+                      />
+                    </td>
                     <td style={{ fontWeight: "600" }}>{client.business_name}</td>
                     <td>{client.client_name}</td>
                     <td style={{ textAlign: "center" }}>{client.email}</td>

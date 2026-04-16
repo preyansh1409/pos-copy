@@ -109,6 +109,23 @@ const ClientProfile = () => {
       {/* Header Section */}
       <div style={{ position: "relative", textAlign: "center", marginBottom: "30px", padding: "0 100px" }}>
         <h3 style={{ margin: 0 }}>Client Detailed Profile</h3>
+        
+        {/* Logo Display */}
+        <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
+          <img 
+            src={client.logo_url || "/logo.jpg"} 
+            alt="Business Logo" 
+            style={{ 
+              width: "100px", 
+              height: "100px", 
+              borderRadius: "50%", 
+              objectFit: "cover", 
+              border: "3px solid #1a237e",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
+            }}
+            onError={(e) => e.target.src = "/logo.jpg"}
+          />
+        </div>
 
         <div style={{ position: "absolute", right: "0px", top: "50%", transform: "translateY(-50%)", display: "flex", gap: "10px" }}>
           {!editing ? (
@@ -156,6 +173,10 @@ const ClientProfile = () => {
             <div className="info-group centered">
               <label>Phone</label>
               {editing ? <input name="phone" value={formData.phone} onChange={handleChange} /> : <p>{client.phone}</p>}
+            </div>
+            <div className="info-group centered">
+              <label>Logo URL</label>
+              {editing ? <input name="logo_url" value={formData.logo_url} onChange={handleChange} /> : <p style={{ fontSize: '0.8rem', color: '#64748b' }}>{client.logo_url || "No logo set"}</p>}
             </div>
           </div>
         </div>
@@ -309,7 +330,7 @@ const ClientProfile = () => {
         }
         .client-four-col-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(5, 1fr);
           gap: 20px;
           margin-bottom: 10px;
         }
