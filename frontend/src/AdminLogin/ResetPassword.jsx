@@ -15,8 +15,9 @@ export default function ResetPassword() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        console.log("ResetPassword component mounted. Token:", token);
         if (!token) {
-            setError("Invalid or missing reset token.");
+            setError("Invalid or missing reset token. Please check your email link.");
         }
     }, [token]);
 

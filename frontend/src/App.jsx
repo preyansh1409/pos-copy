@@ -20,7 +20,7 @@ import SuperAdminStats from "./SuperAdmin/SuperAdminStats";
 
 export default function App() {
     return (
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter>
             <Routes>
                 {/* UNIFIED LOGIN - Single entry point for all roles */}
                 <Route path="/" element={<AdminLogin />} />

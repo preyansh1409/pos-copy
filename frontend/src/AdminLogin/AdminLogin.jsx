@@ -1,5 +1,5 @@
 import API_BASE_URL from "../apiConfig";
-// Trigger Redeploy: Branding System Version 1.1
+// Trigger Redeploy: Reset Password Fix & SMTP Update Version 1.2
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
@@ -15,6 +15,7 @@ export default function AdminLogin() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
+  const [forgotError, setForgotError] = useState("");
   // --- Dynamic Branding State ---
   const [branding, setBranding] = useState({
     name: "Point of Sale Software",
