@@ -332,7 +332,12 @@ export const forgotPassword = async (req, res) => {
 
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
-    res.status(500).json({ message: "Server error during password reset request." });
+    res.status(500).json({ 
+      success: false,
+      message: "Server error during password reset request.",
+      error: err.message,
+      detail: err.code || "No code"
+    });
   }
 };
 
