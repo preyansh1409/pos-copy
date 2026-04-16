@@ -8,8 +8,8 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.SMTP_USER || "preyanshpatel1409@gmail.com",
-    pass: process.env.SMTP_PASS || "ftvgqrstmppbdhof",
+    user: "preyanshpatel1409@gmail.com",
+    pass: "ftvgqrstmppbdhof", // Hardcoded to bypass Vercel environment variables
   },
   tls: {
     rejectUnauthorized: false // Helps in some restricted server environments
