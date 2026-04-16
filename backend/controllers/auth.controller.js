@@ -44,6 +44,14 @@ export const login = async (req, res) => {
 
     if (clientData.length > 0) {
       const user = clientData[0];
+
+      // Check client status
+      if (user.status === 'inactive' || user.status === 'rejected') {
+        return res.status(403).json({ 
+          message: `Your account is ${user.status}. Please contact support.` 
+        });
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         return res.json({
@@ -72,6 +80,17 @@ export const login = async (req, res) => {
 
     if (userData.length > 0) {
       const user = userData[0];
+
+      // IMPORTANT: Check the parent client status for sub-users
+      if (user.db_name) {
+        const [parentClient] = await db.promise().query("SELECT status FROM clients WHERE db_name = ?", [user.db_name]);
+        if (parentClient.length > 0 && (parentClient[0].status === 'inactive' || parentClient[0].status === 'rejected')) {
+          return res.status(403).json({ 
+            message: `The shop account is ${parentClient[0].status}. Please contact the shop owner.` 
+          });
+        }
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         // Fetch client branding for sub-users

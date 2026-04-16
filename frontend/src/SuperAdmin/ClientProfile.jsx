@@ -49,6 +49,21 @@ const ClientProfile = () => {
     });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("File is too large! Please choose a file under 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, logo_url: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUpdate = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/profile/${id}`, {
@@ -176,8 +191,51 @@ const ClientProfile = () => {
             </div>
             {editing && (
               <div className="info-group centered">
-                <label>Logo URL</label>
-                <input name="logo_url" value={formData.logo_url} onChange={handleChange} />
+                <label>Logo / Branding</label>
+                <div
+                  className="file-upload-wrapper"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    handleFileChange({ target: { files: e.dataTransfer.files } });
+                  }}
+                  style={{
+                    border: '2px dashed #cbd5e1',
+                    borderRadius: '8px',
+                    padding: '10px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    background: '#f8fafc',
+                    width: '100%',
+                    maxWidth: '250px'
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0,
+                      cursor: 'pointer'
+                    }}
+                  />
+                  {formData.logo_url ? (
+                    <div style={{ position: 'relative' }}>
+                      <img src={formData.logo_url} alt="Logo Preview" style={{ maxWidth: '100%', maxHeight: '60px', borderRadius: '4px' }} />
+                      <div style={{ fontSize: '10px', color: '#64748b', marginTop: '4px' }}>Click or drag to change</div>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#64748b', fontSize: '12px' }}>
+                      Drag & Drop or Click to Upload Logo
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

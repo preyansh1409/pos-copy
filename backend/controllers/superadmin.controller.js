@@ -128,14 +128,17 @@ export const updateClientStatus = (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  if (!['active', 'rejected', 'pending'].includes(status)) {
+  if (!['active', 'rejected', 'pending', 'inactive'].includes(status)) {
     return res.status(400).json({ message: "Invalid status" });
   }
 
   const q = "UPDATE clients SET status=? WHERE id=?";
 
   db.query(q, [status, id], (err) => {
-    if (err) return res.status(500).json({ message: "Database error" });
+    if (err) {
+      console.error("UPDATE STATUS ERROR:", err);
+      return res.status(500).json({ message: "Database error: " + err.message });
+    }
     res.json({ message: `Client status updated to ${status}` });
   });
 };
@@ -173,16 +176,29 @@ export const updateClientProfile = (req, res) => {
       updated_at=CURRENT_TIMESTAMP
   `;
 
+  // Provide defaults for values that might be missing or empty strings
   const params = [
-    client_name, business_name, logo_url, email, phone, address,
-    username, role, status,
-    plan_name, plan_start_date, plan_end_date, is_subscription_active,
-    last_payment_amount, last_payment_date, payment_method
+    client_name || null,
+    business_name || null,
+    logo_url || null,
+    email || null,
+    phone || null,
+    address || null,
+    username || null,
+    role || 'client',
+    status || 'pending',
+    plan_name || null,
+    plan_start_date || null,
+    plan_end_date || null,
+    is_subscription_active == 1 ? 1 : 0,
+    last_payment_amount || 0,
+    last_payment_date || null,
+    payment_method || null
   ];
 
   // If password is provided and not just the old hash, hash it and update
   const { password } = req.body;
-  if (password && !password.startsWith('$2a$') && !password.startsWith('$2b$')) {
+  if (password && password.trim() !== "" && !password.startsWith('$2a$') && !password.startsWith('$2b$')) {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     q += `, password=? `;
@@ -195,10 +211,12 @@ export const updateClientProfile = (req, res) => {
   db.query(q, params, (err) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(409).json({ message: "Username already exists" });
+        const field = err.message.includes('email') ? 'Email' : 'Username';
+        return res.status(409).json({ message: `${field} already exists` });
       }
       console.error("UPDATE CLIENT ERROR:", err);
-      return res.status(500).json({ message: "Database error" });
+      // Return the actual DB error for debugging in "live" since the user is asking for help with a specific error
+      return res.status(500).json({ message: "Database error: " + err.message });
     }
     res.json({ message: "Client profile updated successfully" });
   });
