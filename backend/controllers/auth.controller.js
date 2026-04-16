@@ -7,12 +7,13 @@ import nodemailer from "nodemailer";
 /* ================= EMAIL TRANSPORTER ================= */
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Use SSL
+  port: 587,
+  secure: false, // Use TLS (true for 465, false for other ports)
   auth: {
     user: process.env.SMTP_USER || "preyanshpatel1409@gmail.com",
-    pass: process.env.SMTP_PASS || "ftvgqrstmppbdhof", // Spaces removed
+    pass: process.env.SMTP_PASS || "ftvgqrstmppbdhof",
   },
+  pool: true, // Use pooled connection
 });
 
 /* ================= LOGIN ================= */
