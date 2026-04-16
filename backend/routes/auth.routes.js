@@ -9,6 +9,7 @@ import {
   resetPassword,
   getTenantBranding,
   updateClientInfo,
+  testMail,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.get("/tenant-branding/:username", getTenantBranding);
 router.put("/update-client-info/:id", updateClientInfo);
+router.get("/test-mail", testMail);
 
 export default router;

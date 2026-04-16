@@ -7,11 +7,11 @@ import nodemailer from "nodemailer";
 /* ================= EMAIL TRANSPORTER ================= */
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use TLS
+  port: 465,
+  secure: true, // Use SSL
   auth: {
     user: process.env.SMTP_USER || "preyanshpatel1409@gmail.com",
-    pass: process.env.SMTP_PASS || "ftvg qrst mppb dhof",
+    pass: process.env.SMTP_PASS || "ftvgqrstmppbdhof", // Spaces removed
   },
 });
 
@@ -432,5 +432,21 @@ export const updateClientInfo = async (req, res) => {
   } catch (err) {
     console.error("UPDATE CLIENT ERROR:", err);
     res.status(500).json({ message: "Failed to update information" });
+  }
+};
+
+/* ================= DIAGNOSTIC: TEST MAIL CONNECTION ================= */
+export const testMail = async (req, res) => {
+  try {
+    const info = await transporter.sendMail({
+      from: transporter.options.auth.user,
+      to: "preyanshpatel1409@gmail.com",
+      subject: "Diagnostic - Pos Reset",
+      text: "If you see this, the SMTP connection is working correctly."
+    });
+    res.json({ success: true, info });
+  } catch (err) {
+    console.error("DEBUG MAIL ERROR:", err);
+    res.status(500).json({ success: false, message: err.message, stack: err.stack });
   }
 };
