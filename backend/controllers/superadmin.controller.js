@@ -115,7 +115,7 @@ export const registerClient = async (req, res) => {
 
 /* ================= GET ALL CLIENTS ================= */
 export const getRegistrations = (req, res) => {
-  const q = "SELECT id, client_name, business_name, email, phone, status, plan_name, plan_end_date, is_subscription_active, db_name FROM clients ORDER BY created_at DESC";
+  const q = "SELECT id, client_name, business_name, logo_url, email, phone, status, plan_name, plan_end_date, is_subscription_active, db_name FROM clients ORDER BY created_at DESC";
 
   db.query(q, (err, data) => {
     if (err) return res.status(500).json({ message: "Server error" });
