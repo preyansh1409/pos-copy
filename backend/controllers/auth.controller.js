@@ -6,14 +6,14 @@ import nodemailer from "nodemailer";
 /* ================= AUTO-CREATE TABLES ================= */
 /* ================= EMAIL TRANSPORTER ================= */
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use TLS (true for 465, false for other ports)
+  service: "gmail",
   auth: {
     user: process.env.SMTP_USER || "preyanshpatel1409@gmail.com",
     pass: process.env.SMTP_PASS || "ftvgqrstmppbdhof",
   },
-  pool: true, // Use pooled connection
+  tls: {
+    rejectUnauthorized: false // Helps in some restricted server environments
+  }
 });
 
 /* ================= LOGIN ================= */
