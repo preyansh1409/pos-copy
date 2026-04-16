@@ -174,10 +174,12 @@ const ClientProfile = () => {
               <label>Phone</label>
               {editing ? <input name="phone" value={formData.phone} onChange={handleChange} /> : <p>{client.phone}</p>}
             </div>
-            <div className="info-group centered">
-              <label>Logo URL</label>
-              {editing ? <input name="logo_url" value={formData.logo_url} onChange={handleChange} /> : <p style={{ fontSize: '0.8rem', color: '#64748b' }}>{client.logo_url || "No logo set"}</p>}
-            </div>
+            {editing && (
+              <div className="info-group centered">
+                <label>Logo URL</label>
+                <input name="logo_url" value={formData.logo_url} onChange={handleChange} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -330,7 +332,7 @@ const ClientProfile = () => {
         }
         .client-four-col-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
           gap: 20px;
           margin-bottom: 10px;
         }
