@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "preyanshpatel1409@gmail.com",
-    pass: "ftvgqrstmppbdhof", // Hardcoded to bypass Vercel environment variables
+    pass: "ftvg qrst mppb dhof", // Included spaces as provided by user
   },
   tls: {
     rejectUnauthorized: false // Helps in some restricted server environments
