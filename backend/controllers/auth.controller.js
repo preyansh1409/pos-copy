@@ -277,7 +277,7 @@ export const forgotPassword = async (req, res) => {
 
     console.log(`🔍 Found ${role} account for username: ${username}. Sending link to: ${destinationEmail}`);
 
-    const username = user.username;
+    const systemUsername = user.username;
 
     // 2. Generate Token
     const token = crypto.randomBytes(32).toString("hex");
