@@ -125,21 +125,81 @@ const ClientProfile = () => {
       <div style={{ position: "relative", textAlign: "center", marginBottom: "30px", padding: "0 100px" }}>
         <h3 style={{ margin: 0 }}>Client Detailed Profile</h3>
         
-        {/* Logo Display */}
+        {/* Logo Display / Uploader */}
         <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
-          <img 
-            src={client.logo_url || "/logo.jpg"} 
-            alt="Business Logo" 
-            style={{ 
-              width: "100px", 
-              height: "100px", 
-              borderRadius: "50%", 
-              objectFit: "cover", 
-              border: "3px solid #1a237e",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
-            }}
-            onError={(e) => e.target.src = "/logo.jpg"}
-          />
+          {!editing ? (
+            <img 
+              src={client.logo_url || "/logo.jpg"} 
+              alt="Business Logo" 
+              style={{ 
+                width: "120px", 
+                height: "120px", 
+                borderRadius: "50%", 
+                objectFit: "cover", 
+                border: "3px solid #1a237e",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+              }}
+              onError={(e) => e.target.src = "/logo.jpg"}
+            />
+          ) : (
+            <div
+              className="file-upload-wrapper"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleFileChange({ target: { files: e.dataTransfer.files } });
+              }}
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                border: '3px dashed #1a237e',
+                background: '#f8fafc',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer',
+                  zIndex: 2
+                }}
+              />
+              {formData.logo_url ? (
+                <img src={formData.logo_url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ color: '#1a237e', fontSize: '10px', textAlign: 'center', padding: '10px' }}>
+                  Click to Upload Logo
+                </div>
+              )}
+              <div style={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                width: '100%', 
+                background: 'rgba(26, 35, 126, 0.7)', 
+                color: 'white', 
+                fontSize: '9px', 
+                padding: '4px 0',
+                textAlign: 'center'
+              }}>
+                CHANGE PHOTO
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={{ position: "absolute", right: "0px", top: "50%", transform: "translateY(-50%)", display: "flex", gap: "10px" }}>
@@ -189,55 +249,6 @@ const ClientProfile = () => {
               <label>Phone</label>
               {editing ? <input name="phone" value={formData.phone} onChange={handleChange} /> : <p>{client.phone}</p>}
             </div>
-            {editing && (
-              <div className="info-group centered">
-                <label>Logo / Branding</label>
-                <div
-                  className="file-upload-wrapper"
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    handleFileChange({ target: { files: e.dataTransfer.files } });
-                  }}
-                  style={{
-                    border: '2px dashed #cbd5e1',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    background: '#f8fafc',
-                    width: '100%',
-                    maxWidth: '250px'
-                  }}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      opacity: 0,
-                      cursor: 'pointer'
-                    }}
-                  />
-                  {formData.logo_url ? (
-                    <div style={{ position: 'relative' }}>
-                      <img src={formData.logo_url} alt="Logo Preview" style={{ maxWidth: '100%', maxHeight: '60px', borderRadius: '4px' }} />
-                      <div style={{ fontSize: '10px', color: '#64748b', marginTop: '4px' }}>Click or drag to change</div>
-                    </div>
-                  ) : (
-                    <div style={{ color: '#64748b', fontSize: '12px' }}>
-                      Drag & Drop or Click to Upload Logo
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
