@@ -237,28 +237,29 @@ createPasswordResetsTable(); // Ensure table exists
 
 /* ================= FORGOT PASSWORD (SEARCH BY EMAIL) ================= */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ message: "Email is required" });
+  const { email, username } = req.body;
+  if (!email || !username) return res.status(400).json({ message: "Username and Email are required" });
 
   try {
-    // 1. Find User Info (Search across all tables by Email)
+    // 1. Find User Info (Search by Username)
     let user = null;
     let role = "";
+    const destinationEmail = email; // Send to the email provided in the form
 
     // a. Check super_admins
-    const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE email=?", [email]);
+    const [superData] = await db.promise().query("SELECT * FROM super_admins WHERE username=?", [username]);
     if (superData.length > 0) {
       user = superData[0];
       role = "superadmin";
     } else {
       // b. Check clients
-      const [clientData] = await db.promise().query("SELECT * FROM clients WHERE email=?", [email]);
+      const [clientData] = await db.promise().query("SELECT * FROM clients WHERE username=?", [username]);
       if (clientData.length > 0) {
         user = clientData[0];
         role = "client";
       } else {
         // c. Check users
-        const [userData] = await db.promise().query("SELECT * FROM users WHERE email=?", [email]);
+        const [userData] = await db.promise().query("SELECT * FROM users WHERE username=?", [username]);
         if (userData.length > 0) {
           user = userData[0];
           role = "user";
@@ -267,14 +268,14 @@ export const forgotPassword = async (req, res) => {
     }
 
     if (!role) {
-      console.warn(`⚠️ Forgot request for UNKNOWN email: ${email}`);
-      // Security: Always return success message even if email not found
-      return res.json({
-        success: true,
-        message: "If that email is registered, a reset link has been sent!",
+      console.warn(`⚠️ Forgot request failed - No account found for username: ${username}`);
+      return res.status(404).json({
+        success: false,
+        message: "No account found with that username.",
       });
     }
-    console.log(`🔍 Found ${role} account for email: ${email} (username: ${user.username})`);
+
+    console.log(`🔍 Found ${role} account for username: ${username}. Sending link to: ${destinationEmail}`);
 
     const username = user.username;
 
@@ -293,7 +294,7 @@ export const forgotPassword = async (req, res) => {
 
     const mailOptions = {
       from: `"Prestige POS System" <${transporter.options.auth.user}>`,
-      to: email, // SEND DIRECTLY TO USER
+      to: destinationEmail, // SEND TO DETERMINED EMAIL
       subject: `🔑 Password Reset Request - Prestige Garments`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">

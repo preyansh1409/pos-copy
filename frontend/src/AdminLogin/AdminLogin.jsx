@@ -13,6 +13,7 @@ export default function AdminLogin() {
 
   // Forgot Password State
   const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotUsername, setForgotUsername] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
   const [forgotError, setForgotError] = useState("");
@@ -43,8 +44,8 @@ export default function AdminLogin() {
   const handleForgotSubmit = async () => {
     setForgotMessage("");
     setForgotError("");
-    if (!forgotEmail) {
-      setForgotError("Please enter your registered email");
+    if (!forgotEmail || !forgotUsername) {
+      setForgotError("Please enter both username and destination email");
       return;
     }
 
@@ -52,7 +53,7 @@ export default function AdminLogin() {
       const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
+        body: JSON.stringify({ email: forgotEmail, username: forgotUsername }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -193,7 +194,7 @@ export default function AdminLogin() {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', marginBottom: '16px' }}>
             <span
-              onClick={() => { setShowForgotModal(true); setForgotMessage(""); setForgotError(""); setForgotEmail(""); }}
+              onClick={() => { setShowForgotModal(true); setForgotMessage(""); setForgotError(""); setForgotEmail(""); setForgotUsername(""); }}
               style={{ color: '#1e3a5f', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
             >
               Request Password Reset?
@@ -209,11 +210,19 @@ export default function AdminLogin() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
           <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', width: '100%', maxWidth: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
             <h3 style={{ margin: '0 0 16px 0', color: '#1e293b', fontSize: '20px' }}>Reset Password</h3>
-            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>Enter your registered email address and we'll send you a secure link to reset your password.</p>
+            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>Enter your account username and the email address where you'd like to receive the secure reset link.</p>
+
+            <input
+              type="text"
+              placeholder="Your Username (e.g. super)"
+              value={forgotUsername}
+              onChange={e => setForgotUsername(e.target.value)}
+              style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', marginBottom: '16px', boxSizing: 'border-box' }}
+            />
 
             <input
               type="email"
-              placeholder="Enter your registered email"
+              placeholder="Send Link to this Email"
               value={forgotEmail}
               onChange={e => setForgotEmail(e.target.value)}
               style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', marginBottom: '16px', boxSizing: 'border-box' }}
