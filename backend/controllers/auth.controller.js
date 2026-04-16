@@ -315,16 +315,20 @@ export const forgotPassword = async (req, res) => {
     // Send email - MUST AWAIT on Vercel to prevent function termination
     try {
       await transporter.sendMail(mailOptions);
-      console.log("✅ Reset request email sent directly to user:", email);
+      console.log(`✅ Reset link sent to ${destinationEmail}`);
+      
+      return res.json({
+        success: true,
+        message: `A reset link has been sent to ${destinationEmail}!`,
+      });
     } catch (mailErr) {
       console.error("❌ NODEMAILER RESET REQ ERROR:", mailErr);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Account found, but failed to send email. Check SMTP settings.",
+        error: mailErr.message 
+      });
     }
-
-    // Respond AFTER email is handled
-    return res.json({
-      success: true,
-      message: "If that email is registered, a reset link has been sent!",
-    });
 
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
